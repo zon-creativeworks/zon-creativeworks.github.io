@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug - Local",
+      "url": "http://localhost:3000"
+    },
+    {
+      "type": "devtools-for-chrome",
+      "request": "launch",
+      "name": "Debug - Host",
+      "url": "https://192.168.0.187:3000"
+    }
+  ]
+}
