@@ -14,7 +14,7 @@
     "composite": true,
     "declaration": true,
     "disableSizeLimit": true,
-    "outDir": "public/scripts",
+    "outDir": "scripts",
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
   },

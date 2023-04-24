@@ -7,9 +7,6 @@ export default defineConfig({
     https: false,
     port: 3000,
     cors: true,
-    fs: {
-      allow: ['./code', './public'],
-    },
   },
   
   build: {
