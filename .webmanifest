@@ -31,5 +31,5 @@
   "import": true,
   "storage": true,
   "offline_enabled": true,
-  "optional_permissions": ["geolocation", "microphone"]
+  "optional_permissions": ["geolocation", "microphone", "gyroscope"]
 }
