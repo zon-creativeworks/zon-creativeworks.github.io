@@ -1,11 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class VoiceSynthesizer {
+export default class VoiceSynthesizer {
+    speech;
+    phrase;
+    voices;
+    vocalTone = 0.3;
+    defaultLang = 'en-GB';
+    rateOfSpeech = 1.1;
+    speechVolume = 0.3;
     constructor() {
-        this.vocalTone = 0.3;
-        this.defaultLang = 'en-GB';
-        this.rateOfSpeech = 1.1;
-        this.speechVolume = 0.3;
         if ('speechSynthesis' in window || 'webkitSpeechSynthesis' in window) {
             console.debug(`-- Module Loaded: Voice Synth --`);
             this.speech = window.speechSynthesis;
@@ -44,5 +45,4 @@ class VoiceSynthesizer {
         this.speech.speak(this.phrase);
     }
 }
-exports.default = VoiceSynthesizer;
 //# sourceMappingURL=VoiceSynthesis.js.map

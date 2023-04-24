@@ -18,7 +18,10 @@
 
     <!-- Preload Scripts -->
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script type="module" src="code/index.ts" preload></script>
+
+    <!-- Small hack to fix typescript bug -->
+    <!-- <script>var exports = {};</script> -->
+    <script type="module" src="scripts/code/index.js" preload></script>
   </head>
   
   <body>

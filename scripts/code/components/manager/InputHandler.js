@@ -1,10 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const phaser_1 = __importDefault(require("phaser"));
-class InputHandler extends phaser_1.default.Scene {
+import Phaser from 'phaser';
+export default class InputHandler extends Phaser.Scene {
     constructor() { super('InputHandler'); }
     init() {
         this.cameras.main.centerOn(0, 0);
@@ -56,5 +51,4 @@ class InputHandler extends phaser_1.default.Scene {
         });
     }
 }
-exports.default = InputHandler;
 //# sourceMappingURL=InputHandler.js.map

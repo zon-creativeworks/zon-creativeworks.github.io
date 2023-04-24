@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "module": "CommonJS",
 
     "allowJs": true,
@@ -14,10 +14,14 @@
     "composite": true,
     "declaration": true,
     "disableSizeLimit": true,
-    "outDir": "scripts",
-    "moduleResolution": "nodenext",
+    "outDir": "./scripts",
+    "moduleResolution": "node",
     "esModuleInterop": true,
   },
-  "include": ["code/"],
-  "exclude": ["**/*.spec.ts"]
+  "exclude": [
+    "**/*.spec.ts", 
+    "vite.config.ts", 
+    "vercel.json",
+    "scripts/"
+  ]
 }

@@ -1,65 +1,29 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const Tone = __importStar(require("tone"));
-const THREE = __importStar(require("three"));
-const EffectComposer_1 = require("three/examples/jsm/postprocessing/EffectComposer");
-const index_1 = require("../index");
-const TexturePass_1 = require("three/examples/jsm/postprocessing/TexturePass");
-const TAARenderPass_1 = require("three/examples/jsm/postprocessing/TAARenderPass");
-const PostProcessing_1 = require("../components/manager/PostProcessing");
-class MainInterface extends Phaser.Scene {
-    constructor() {
-        super('MainInterface');
-        this.rootScene = new THREE.Scene();
-        this.onlineTD = new Date();
-        this.played01H = false;
-        this.played10M = false;
-        this.nearField = 0.1e-3;
-        this.distField = 10.0e3;
-        this.fieldOfView = 60;
-        this.isQuietTime = false;
-        this.cursor = { x: 0, y: 0 };
-        index_1.phaseCanvas.width = window.innerWidth;
-        index_1.phaseCanvas.height = window.innerHeight;
-        index_1.threeCanvas.width = window.innerWidth;
-        index_1.threeCanvas.height = window.innerHeight;
-        this.res = {
-            w: window.innerWidth,
-            h: window.innerHeight,
-        };
-        this.aspectRatio = this.res.w / this.res.h;
-        this.rootRenderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            canvas: index_1.threeCanvas,
-        });
-        this.rootRenderer.setSize(this.res.w, this.res.h);
-        this.rootRenderer.setPixelRatio(window.devicePixelRatio);
-        this.phaseTexture = new THREE.CanvasTexture(index_1.phaseCanvas);
-    }
+import * as Tone from 'tone';
+import * as THREE from 'three';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { threeCanvas, phaseCanvas } from '../index';
+import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
+import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
+import { AdaptiveToneMappingPass, AfterimagePass, FXAA, FilmPass, GlitchPass, UnrealBloomPass } from '../components/manager/PostProcessing';
+export default class MainInterface extends Phaser.Scene {
+    camera3D;
+    rootScene = new THREE.Scene();
+    rootRenderer;
+    phaseTexture;
+    onlineTD = new Date();
+    bell10M;
+    bell01H;
+    played01H = false;
+    played10M = false;
+    camera2D;
+    res;
+    isMobile;
+    nearField = 0.1e-3;
+    distField = 10.0e3;
+    aspectRatio;
+    fieldOfView = 60;
+    isQuietTime = false;
+    cursor = { x: 0, y: 0 };
     getCursor() { return this.cursor; }
     ;
     handleInteraction(area, handlers) {
@@ -72,6 +36,26 @@ class MainInterface extends Phaser.Scene {
             handlers.onClick(this.getCursor());
         else if (isTouch && handlers.onTouch)
             handlers.onTouch(this.getCursor());
+    }
+    constructor() {
+        super('MainInterface');
+        phaseCanvas.width = window.innerWidth;
+        phaseCanvas.height = window.innerHeight;
+        threeCanvas.width = window.innerWidth;
+        threeCanvas.height = window.innerHeight;
+        this.res = {
+            w: window.innerWidth,
+            h: window.innerHeight,
+        };
+        this.aspectRatio = this.res.w / this.res.h;
+        this.rootRenderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true,
+            canvas: threeCanvas,
+        });
+        this.rootRenderer.setSize(this.res.w, this.res.h);
+        this.rootRenderer.setPixelRatio(window.devicePixelRatio);
+        this.phaseTexture = new THREE.CanvasTexture(phaseCanvas);
     }
     preload() {
         this.load.svg('TiLLI', 'assets/icons/TiLLI.svg', { scale: 0.55 });
@@ -124,7 +108,7 @@ class MainInterface extends Phaser.Scene {
             if (fxPlayer.state === 'stopped')
                 fxPlayer.start();
             !this.isQuietTime && playFX();
-        }, Phaser.Math.Between(30000, 120000));
+        }, Phaser.Math.Between(30_000, 120_000));
         playFX();
         const bellVolume = new Tone.Volume(-3).toDestination();
         this.bell01H = new Tone.Player('assets/audio/Bell01H.wav').connect(bellVolume);
@@ -183,13 +167,12 @@ class MainInterface extends Phaser.Scene {
         let deviceOrientationBeta = -Infinity;
         let deviceOrientationGamma = -Infinity;
         window.addEventListener('devicemotion', (dme) => {
-            var _a, _b, _c, _d, _e, _f;
-            deviceMotionX = (_a = dme.acceleration) === null || _a === void 0 ? void 0 : _a.x;
-            deviceMotionY = (_b = dme.acceleration) === null || _b === void 0 ? void 0 : _b.y;
-            deviceMotionZ = (_c = dme.acceleration) === null || _c === void 0 ? void 0 : _c.z;
-            deviceRotationAlpha = (_d = dme.rotationRate) === null || _d === void 0 ? void 0 : _d.alpha;
-            deviceRotationBeta = (_e = dme.rotationRate) === null || _e === void 0 ? void 0 : _e.beta;
-            deviceRotationGamma = (_f = dme.rotationRate) === null || _f === void 0 ? void 0 : _f.gamma;
+            deviceMotionX = dme.acceleration?.x;
+            deviceMotionY = dme.acceleration?.y;
+            deviceMotionZ = dme.acceleration?.z;
+            deviceRotationAlpha = dme.rotationRate?.alpha;
+            deviceRotationBeta = dme.rotationRate?.beta;
+            deviceRotationGamma = dme.rotationRate?.gamma;
         });
         window.addEventListener('deviceorientation', (doe) => {
             deviceOrientationAlpha = doe.alpha;
@@ -218,15 +201,15 @@ class MainInterface extends Phaser.Scene {
         window.ontouchmove = (m) => {
             console.debug(m);
         };
-        const comp = new EffectComposer_1.EffectComposer(this.rootRenderer);
+        const comp = new EffectComposer(this.rootRenderer);
         const vec2res = new THREE.Vector2(this.res.h, this.res.w);
-        const rootPass = new TAARenderPass_1.TAARenderPass(this.rootScene, this.camera3D, 0xAF77AF, 0.54);
-        const tx2DPass = new TexturePass_1.TexturePass(this.phaseTexture, 0.9);
-        const hazyGlow = new PostProcessing_1.UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
-        const retroCRT = new PostProcessing_1.FilmPass(0.35, 0.64, window.screen.height * 2, 0);
-        const timeHaze = new PostProcessing_1.AfterimagePass(0.3);
-        const normalize = new PostProcessing_1.AdaptiveToneMappingPass(true, 64);
-        const transGlitch = new PostProcessing_1.GlitchPass(-1);
+        const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xAF77AF, 0.54);
+        const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
+        const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
+        const retroCRT = new FilmPass(0.35, 0.64, window.screen.height * 2, 0);
+        const timeHaze = new AfterimagePass(0.3);
+        const normalize = new AdaptiveToneMappingPass(true, 64);
+        const transGlitch = new GlitchPass(-1);
         transGlitch.randX = 0.001;
         transGlitch.curF = 0.00001;
         transGlitch.enabled = false;
@@ -237,7 +220,7 @@ class MainInterface extends Phaser.Scene {
         comp.addPass(hazyGlow);
         comp.addPass(normalize);
         comp.addPass(retroCRT);
-        comp.addPass(PostProcessing_1.FXAA);
+        comp.addPass(FXAA);
         setInterval(() => {
             retroCRT.uniforms['time'] = new THREE.Uniform(0);
         }, 3000);
@@ -249,5 +232,4 @@ class MainInterface extends Phaser.Scene {
         this.camera3D.updateWorldMatrix(true, true);
     }
 }
-exports.default = MainInterface;
 //# sourceMappingURL=MainInterface.js.map

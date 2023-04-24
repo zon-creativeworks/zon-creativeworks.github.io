@@ -11,14 +11,19 @@
   },
   "scripts": {
     "pwa": "npx workbox generateSW workbox.config",
+
     "copy:workbox": "cp ./dist/workbox-fa9115e2.js ./workbox-fa9115e2.js && cp ./dist/workbox-fa9115e2.js.map ./workbox-fa9115e2.js.map",
     "copy:service-worker": "cp ./dist/sw.js ./sw.dev.js && cp ./dist/sw.js.map ./sw.dev.js.map",
     "cp": "pnpm copy:workbox && pnpm copy:service-worker",
+
     "dev": "vite --host --https && tslint --exclude ./node_modules",
     "test": "jasmine",
     "host": "vercel dev",
+
     "build": "vite build && pnpm pwa",
     "serve": "vite preview --host --https",
+
+    "transpile": "cd ./scripts && rm -rf && tsc",
     "pre-deploy": "vite build && pnpm pwa && vite preview --host"
   },
   "repository": {

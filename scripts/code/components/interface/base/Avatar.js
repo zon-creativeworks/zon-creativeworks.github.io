@@ -1,10 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-class Avatar extends Phaser.GameObjects.Container {
+export default class Avatar extends Phaser.GameObjects.Container {
     constructor(x, y, s) {
         super(s, x, y);
-        this.extMaskGeometry = [];
-        this.animationsList = [];
         this.addToUpdateList();
         this.addToDisplayList();
         this.draw = s.add;
@@ -13,11 +9,15 @@ class Avatar extends Phaser.GameObjects.Container {
         this.build();
     }
     build() { }
+    group;
+    draw;
+    extMaskGeometry = [];
     play() { }
     stop() { }
     loop() { }
     anim() { }
+    animations;
+    animationsList = [];
     addAnimation(anim) { }
 }
-exports.default = Avatar;
 //# sourceMappingURL=Avatar.js.map
