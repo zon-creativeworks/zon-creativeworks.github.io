@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>nLucis °|Δ Creative</title>
+
+    <!-- Meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="black">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="code/res/icons/icon_192x192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/layout.css">
+
+    <!-- Preload Scripts -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script type="module" src="index.ts" preload></script>
+  </head>
+  
+  <body>
+    <main id="app">
+      <!-- The Bread & Butter -->
+      <canvas id="three"><!-- THREE JS - Main --></canvas>
+      <canvas id="phase"><!-- Phaser 3 - Main --></canvas>
+
+      <!-- A visual-only element for creating a bezel effect -->
+      <div id="bezel" aria-hidden="true"></div>
+      <overlay>
+        <span id="typograph">}⁰{ ∆⁞ (●)</span>
+      </overlay>
+    </main>
+    <footer>
+      <pre id="copyright-notice">
+        Copyright &copy; 2023 All Rights Reserved
+        👽 Arjay Jones | nLucis Creative
+      </pre>
+
+      <!-- PWA -->
+      <!-- <script type="module" src="sw.js"></script> -->
+
+      <script type="text/javascript" id="app-installer">
+        if ('serviceWorker' in window.navigator) {
+
+          // Register the Service Worker
+          window.addEventListener('DOMContentLoaded', () => {
+          navigator.serviceWorker.register('/sw.js', {
+            scope: "/"
+          });
+          });
+          
+          // What should this do to prompt a user to install the app?
+          window['onbeforeinstallprompt'] = () => {};
+
+          // What should this do as soon as a user opts to install app?
+          window['onappinstalled'] = () => {};
+
+          // Do this when the app is connected to the internet
+          window.ononline = () => {}; 
+
+          // Do this if the app loses a connection to the internet
+          window.onoffline = () => {};
+        }
+      </script>
+    </footer>
+  </body>
+
+</html>
