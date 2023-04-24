@@ -1,1 +1,0 @@
-// Strictly 2D Phaser-Drawn Pictoraphic language-agnostic Symbols and Icons

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+
+    "allowJs": true,
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "preserveConstEnums": false,
+    "noImplicitThis": true,
+    "sourceRoot": "code/",
+    "composite": true,
+    "declaration": true,
+    "disableSizeLimit": true,
+    "outDir": "public/scripts",
+    "moduleResolution": "nodenext",
+  },
+  "include": ["code/"],
+  "exclude": ["**/*.spec.ts"]
+}

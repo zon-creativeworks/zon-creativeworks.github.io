@@ -7,7 +7,6 @@ import TiLLI from './views/TiLLI';
 import InputHandler from './views/screens/InputHandler';
 import SubstrateGrid from './views/screens/SubstrateGrid';
 import VisualDisplay from './views/screens/VisualDisplay';
-import ThreeOrchestrator from './components/manager/ThreeOrchestrator';
 import MainInterface from './components/interface/MainInterface';
 
 /* * GLOBAL CANVAS REFS * */
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
       mainUI.scene.add('InputHandler', InputHandler);
       mainUI.scene.add('SubstrateGrid', SubstrateGrid);
       mainUI.scene.add('VisualDisplay', VisualDisplay);
-      mainUI.scene.add('ThreeOrchestrator', ThreeOrchestrator);
       mainUI.scene.add('MainInterface', MainInterface);
     }
 

@@ -9,7 +9,7 @@ export default defineConfig({
     cors: true,
     fs: {
       allow: ['./code', './public'],
-    }
+    },
   },
   
   build: {

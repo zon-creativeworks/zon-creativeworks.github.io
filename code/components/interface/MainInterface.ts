@@ -5,10 +5,7 @@ import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
 import { AdaptiveToneMappingPass, AfterimagePass, FilmPass, GlitchPass, OutlinePass, UnrealBloomPass } from '../manager/PostProcessing';
 import * as Tone from 'tone';
 import SubstrateGrid from '../../views/screens/SubstrateGrid';
-import TilliBot_Avatar from '../images/TilliBot_Avatar';
 import Avatar from './base/Avatar';
-import TapeHead from '../../modules/programs/TapeHead';
-import Tapehead_Avatar from '../images/Tapehead_Avatar';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 
 
@@ -943,19 +940,6 @@ export default class MainInterface extends Phaser.Scene {
     this.menuSlotNodes.angle = -90;
 
     const slotPrograms = [
-      /* Index = ID */ 
-      {
-        title: 'TiLLI',
-        icon: 'tillibot',
-        avatar: new TilliBot_Avatar(0, 0, this),
-        description: 'The Talking Large-Language Interface is able to converse with users to help them manage Notes, Tasks, Reminders and serves as an AI-powered personal assistant.'
-      },
-      {
-        title: 'Tapehead',
-        icon: 'tapehead',
-        avatar: new Tapehead_Avatar(0, 0, this),
-        description: 'Tapehead provides features for audio-based notes, messaging, as well as raw sampling.'
-      },
       {
         title: 'J-Rod',
         icon: 'eben',
