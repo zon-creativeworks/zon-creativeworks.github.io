@@ -93,21 +93,21 @@ export default class MainInterface extends Phaser.Scene {
   preload(): void {
 
     // Avatar Base Vectors
-    this.load.svg('TiLLI', 'assets/icons/TiLLI.svg', {scale: 0.55});
-    this.load.svg('Tapehead-Base', 'assets/icons/TapeHead_NoSpoke.svg', {scale: 0.55});
-    this.load.svg('Tapehead-SpokeEye', 'assets/icons/TapeHead_SpokeOnly.svg', {scale: 0.55});
+    this.load.svg('TiLLI', 'code/res/icons/TiLLI.svg', {scale: 0.55});
+    this.load.svg('Tapehead-Base', 'code/res/icons/TapeHead_NoSpoke.svg', {scale: 0.55});
+    this.load.svg('Tapehead-SpokeEye', 'code/res/icons/TapeHead_SpokeOnly.svg', {scale: 0.55});
 
     // Mode Icons
-    this.load.svg('eben', 'assets/icons/modes/eben.svg', {scale: 0.12});
-    this.load.svg('wandry', 'assets/icons/modes/wandry.svg', {scale: 0.2})
-    this.load.svg('tapehead', 'assets/icons/modes/tapehead.svg', {scale: 0.12});
-    this.load.svg('tillibot', 'assets/icons/modes/tillibot.svg', {scale: 0.12});
-    this.load.svg('robohobb', 'assets/icons/modes/robohobb.svg', {scale: 0.12});
+    this.load.svg('eben', 'code/res/icons/modes/eben.svg', {scale: 0.12});
+    this.load.svg('wandry', 'code/res/icons/modes/wandry.svg', {scale: 0.2})
+    this.load.svg('tapehead', 'code/res/icons/modes/tapehead.svg', {scale: 0.12});
+    this.load.svg('tillibot', 'code/res/icons/modes/tillibot.svg', {scale: 0.12});
+    this.load.svg('robohobb', 'code/res/icons/modes/robohobb.svg', {scale: 0.12});
 
     // Sensors & Permissions Icons
-    this.load.svg('gyro', 'assets/icons/sensors/gyro.svg', {scale: 0.16});
-    this.load.svg('settings', 'assets/icons/settings.svg', {scale: 0.06});
-    this.load.svg('transcript', 'assets/icons/transcript.svg', {scale: 0.06});
+    this.load.svg('gyro', 'code/res/icons/sensors/gyro.svg', {scale: 0.16});
+    this.load.svg('settings', 'code/res/icons/settings.svg', {scale: 0.06});
+    this.load.svg('transcript', 'code/res/icons/transcript.svg', {scale: 0.06});
   }
 
   init(): void {
@@ -136,8 +136,8 @@ export default class MainInterface extends Phaser.Scene {
     const maxCornerBR = new Phaser.Math.Vector2(+(this.res.w / 2) - pxInset, +(this.res.h / 2) - pxInset);
 
         // Text Interface SFX
-    const open = new Tone.Player('assets/audio/terminalOpen.wav').toDestination();
-    const shut = new Tone.Player('assets/audio/terminalClose.wav').toDestination();
+    const open = new Tone.Player('code/res/audio/terminalOpen.wav').toDestination();
+    const shut = new Tone.Player('code/res/audio/terminalClose.wav').toDestination();
     
     // Define the 2D camera
     this.camera2D = this.cameras.main;
@@ -148,26 +148,26 @@ export default class MainInterface extends Phaser.Scene {
   create(): void {
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
-    const aye = new Tone.Player('assets/audio/aye.wav').connect(mainVolume);
-    const nay = new Tone.Player('assets/audio/nay.wav').toDestination();
-    const activate = new Tone.Player('assets/audio/activate.wav').connect(mainVolume);
-    const deactivate = new Tone.Player('assets/audio/deactivate.wav').toDestination();
-    const staticPulse = new Tone.Player('assets/audio/static_pulse.wav').toDestination();
-    const notificationPing = new Tone.Player('assets/audio/notificationPing.wav').toDestination();
+    const aye = new Tone.Player('code/res/audio/aye.wav').connect(mainVolume);
+    const nay = new Tone.Player('code/res/audio/nay.wav').toDestination();
+    const activate = new Tone.Player('code/res/audio/activate.wav').connect(mainVolume);
+    const deactivate = new Tone.Player('code/res/audio/deactivate.wav').toDestination();
+    const staticPulse = new Tone.Player('code/res/audio/static_pulse.wav').toDestination();
+    const notificationPing = new Tone.Player('code/res/audio/notificationPing.wav').toDestination();
 
     // Menu Audio Components
-    const menuOpen = new Tone.Player('assets/audio/openMenu.wav').toDestination();
-    const menuClose = new Tone.Player('assets/audio/closeMenu.wav').toDestination();
-    const menuSelect = new Tone.Player('assets/audio/menuSelect.wav').toDestination();
+    const menuOpen = new Tone.Player('code/res/audio/openMenu.wav').toDestination();
+    const menuClose = new Tone.Player('code/res/audio/closeMenu.wav').toDestination();
+    const menuSelect = new Tone.Player('code/res/audio/menuSelect.wav').toDestination();
 
         // Background SFX List
     const subVol = new Tone.Volume(-12).toDestination();
 
     const FX: Tone.Player[] = [
-      new Tone.Player('assets/audio/ScreenHum.wav').toDestination(),
-      new Tone.Player('assets/audio/EMF_Noise.wav').toDestination(),
-      new Tone.Player('assets/audio/scannerFX.wav').connect(subVol),
-      new Tone.Player('assets/audio/BrokenSig.wav').connect(subVol),
+      new Tone.Player('code/res/audio/ScreenHum.wav').toDestination(),
+      new Tone.Player('code/res/audio/EMF_Noise.wav').toDestination(),
+      new Tone.Player('code/res/audio/scannerFX.wav').connect(subVol),
+      new Tone.Player('code/res/audio/BrokenSig.wav').connect(subVol),
     ];
     
     // Select and play a random BG SFX every 30 seconds to 2 minutes
@@ -180,8 +180,8 @@ export default class MainInterface extends Phaser.Scene {
 
     // Timing Bells
     const bellVolume = new Tone.Volume(-3).toDestination();
-    this.bell01H = new Tone.Player('assets/audio/Bell01H.wav').connect(bellVolume);
-    this.bell10M = new Tone.Player('assets/audio/Bell10M.wav').connect(bellVolume);
+    this.bell01H = new Tone.Player('code/res/audio/Bell01H.wav').connect(bellVolume);
+    this.bell10M = new Tone.Player('code/res/audio/Bell10M.wav').connect(bellVolume);
     let pastHour: number | null = null;
 
     Tone.Offline(() => {

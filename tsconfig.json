@@ -19,7 +19,7 @@
   },
   "exclude": [
     "**/*.spec.ts", 
-    "vite.config.ts", 
+    "code/vite.config.ts", 
     "vercel.json",
     "scripts/"
   ]
