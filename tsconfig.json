@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
 
     "allowJs": true,
     "sourceMap": true,
@@ -15,7 +14,7 @@
     "declaration": true,
     "disableSizeLimit": true,
     "outDir": "./scripts",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
   },
   "exclude": [
