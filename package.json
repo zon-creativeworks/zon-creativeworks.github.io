@@ -11,18 +11,14 @@
   },
   "scripts": {
     "pwa": "npx workbox generateSW workbox.config",
-
     "copy:workbox": "cp ./dist/workbox-fa9115e2.js ./workbox-fa9115e2.js && cp ./dist/workbox-fa9115e2.js.map ./workbox-fa9115e2.js.map",
     "copy:service-worker": "cp ./dist/sw.js ./sw.dev.js && cp ./dist/sw.js.map ./sw.dev.js.map",
     "cp": "pnpm copy:workbox && pnpm copy:service-worker",
-
     "dev": "vite --host --https && tslint --exclude ./node_modules",
     "test": "jasmine",
     "host": "vercel dev",
-
     "build": "vite build && pnpm pwa",
     "serve": "vite preview --host --https",
-
     "transpile": "cd ./scripts && rm -rf && tsc",
     "pre-deploy": "vite build && pnpm pwa && vite preview --host"
   },
@@ -45,17 +41,13 @@
     "workbox-precaching": "^6.5.4"
   },
   "dependencies": {
-    "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-replace": "^5.0.2",
+    "@rollup/plugin-terser": "^0.4.0",
     "@types/node": "^18.13.0",
     "@types/three": "^0.149.0",
-    "eventemitter3": "^5.0.0",
     "leaflet": "^1.9.2",
     "leaflet-providers": "^1.13.0",
-    "mespeak": "^2.0.2",
     "phaser": "^3.55.2",
-    "pixi.js": "^7.1.2",
-    "require": "^2.4.20",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
     "stripe": "^10.15.0",
