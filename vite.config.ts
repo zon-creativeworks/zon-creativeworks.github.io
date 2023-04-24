@@ -8,8 +8,7 @@ export default defineConfig({
     port: 3000,
     cors: true,
     fs: {
-      allow: ['./dist', './src'],
-      deny: ['./']
+      allow: ['./code', './public'],
     }
   },
   
