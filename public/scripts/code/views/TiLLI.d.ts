@@ -1,12 +1,8 @@
-import InputHandler from './screens/InputHandler';
-import VisualDisplay from './screens/VisualDisplay';
-import SubstrateGrid from './screens/SubstrateGrid';
+import InputHandler from '../components/manager/InputHandler';
 export declare const UI_Layers: {};
 export default class TiLLI extends Phaser.Scene {
     constructor();
     InputHandler: InputHandler;
-    VisualDisplay: VisualDisplay;
-    SubstrateGrid: SubstrateGrid;
     MODE: string;
     camera2: Phaser.Cameras.Scene2D.Camera;
     glyphcode: number;

@@ -46,10 +46,6 @@ import { OutlineEffect  } from 'three/examples/jsm/effects/OutlineEffect';
 import { AnaglyphEffect } from 'three/examples/jsm/effects/AnaglyphEffect';
 import { HTMLMesh       } from 'three/examples/jsm/interactive/HTMLMesh';
 
-// Offscreen
-import * as sc3 from 'three/examples/jsm/offscreen/scene';
-import * as os3 from 'three/examples/jsm/offscreen/offscreen';
-
 // Computational
 // import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes';
 
@@ -91,10 +87,6 @@ export {
   OutlineEffect,
   AnaglyphEffect,
   HTMLMesh,
-
-  // Offscreen
-  sc3,
-  os3,
 
   // Computational
   // MarchingCubes

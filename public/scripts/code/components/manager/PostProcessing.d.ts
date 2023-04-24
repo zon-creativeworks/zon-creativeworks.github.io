@@ -28,6 +28,4 @@ declare const Redshift: ShaderPass;
 import { OutlineEffect } from 'three/examples/jsm/effects/OutlineEffect';
 import { AnaglyphEffect } from 'three/examples/jsm/effects/AnaglyphEffect';
 import { HTMLMesh } from 'three/examples/jsm/interactive/HTMLMesh';
-import * as sc3 from 'three/examples/jsm/offscreen/scene';
-import * as os3 from 'three/examples/jsm/offscreen/offscreen';
-export { EffectComposer, RenderPass, AfterimagePass, BloomPass, BokehPass, DotScreenPass, FilmPass, GlitchPass, HalftonePass, LUTPass, MaskPass, OutlinePass, RenderPixelatedPass, SAOPass, SMAAPass, SSRPass, UnrealBloomPass, TexturePass, SavePass, ClearPass, TAARenderPass, AdaptiveToneMappingPass, FXAA, TriangleBlur, DepthLimBlur, Redshift, OutlineEffect, AnaglyphEffect, HTMLMesh, sc3, os3, };
+export { EffectComposer, RenderPass, AfterimagePass, BloomPass, BokehPass, DotScreenPass, FilmPass, GlitchPass, HalftonePass, LUTPass, MaskPass, OutlinePass, RenderPixelatedPass, SAOPass, SMAAPass, SSRPass, UnrealBloomPass, TexturePass, SavePass, ClearPass, TAARenderPass, AdaptiveToneMappingPass, FXAA, TriangleBlur, DepthLimBlur, Redshift, OutlineEffect, AnaglyphEffect, HTMLMesh, };

@@ -1,7 +1,30 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.os3 = exports.sc3 = exports.HTMLMesh = exports.AnaglyphEffect = exports.OutlineEffect = exports.Redshift = exports.DepthLimBlur = exports.TriangleBlur = exports.FXAA = exports.AdaptiveToneMappingPass = exports.TAARenderPass = exports.ClearPass = exports.SavePass = exports.TexturePass = exports.UnrealBloomPass = exports.SSRPass = exports.SMAAPass = exports.SAOPass = exports.RenderPixelatedPass = exports.OutlinePass = exports.MaskPass = exports.LUTPass = exports.HalftonePass = exports.GlitchPass = exports.FilmPass = exports.DotScreenPass = exports.BokehPass = exports.BloomPass = exports.AfterimagePass = exports.RenderPass = exports.EffectComposer = void 0;
-const THREE = require("three");
+exports.HTMLMesh = exports.AnaglyphEffect = exports.OutlineEffect = exports.Redshift = exports.DepthLimBlur = exports.TriangleBlur = exports.FXAA = exports.AdaptiveToneMappingPass = exports.TAARenderPass = exports.ClearPass = exports.SavePass = exports.TexturePass = exports.UnrealBloomPass = exports.SSRPass = exports.SMAAPass = exports.SAOPass = exports.RenderPixelatedPass = exports.OutlinePass = exports.MaskPass = exports.LUTPass = exports.HalftonePass = exports.GlitchPass = exports.FilmPass = exports.DotScreenPass = exports.BokehPass = exports.BloomPass = exports.AfterimagePass = exports.RenderPass = exports.EffectComposer = void 0;
+const THREE = __importStar(require("three"));
 const EffectComposer_1 = require("three/examples/jsm/postprocessing/EffectComposer");
 Object.defineProperty(exports, "EffectComposer", { enumerable: true, get: function () { return EffectComposer_1.EffectComposer; } });
 const RenderPass_1 = require("three/examples/jsm/postprocessing/RenderPass");
@@ -66,8 +89,4 @@ const AnaglyphEffect_1 = require("three/examples/jsm/effects/AnaglyphEffect");
 Object.defineProperty(exports, "AnaglyphEffect", { enumerable: true, get: function () { return AnaglyphEffect_1.AnaglyphEffect; } });
 const HTMLMesh_1 = require("three/examples/jsm/interactive/HTMLMesh");
 Object.defineProperty(exports, "HTMLMesh", { enumerable: true, get: function () { return HTMLMesh_1.HTMLMesh; } });
-const sc3 = require("three/examples/jsm/offscreen/scene");
-exports.sc3 = sc3;
-const os3 = require("three/examples/jsm/offscreen/offscreen");
-exports.os3 = os3;
 //# sourceMappingURL=PostProcessing.js.map

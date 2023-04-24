@@ -2,9 +2,7 @@ import {
   threeCanvas, 
   phaseCanvas 
 } from '../index';
-import InputHandler from './screens/InputHandler';
-import VisualDisplay from './screens/VisualDisplay';
-import SubstrateGrid from './screens/SubstrateGrid';
+import InputHandler from '../components/manager/InputHandler';
 
 
 // Interface Alignment Layers & Config Presets
@@ -16,8 +14,6 @@ export default class TiLLI extends Phaser.Scene {
 
   // Layer Refs - Fetch each of this as children of the AiDA ref on window
   public InputHandler: InputHandler;
-  public VisualDisplay: VisualDisplay;
-  public SubstrateGrid: SubstrateGrid;
   
   // Global App Props
   public MODE: string = 'CONSOLE';

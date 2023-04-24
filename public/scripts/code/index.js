@@ -1,13 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bezel = exports.phaseCanvas = exports.threeCanvas = void 0;
-const phaser_1 = require("phaser");
-const Tone = require("tone");
-const TiLLI_1 = require("./views/TiLLI");
-const InputHandler_1 = require("./views/screens/InputHandler");
-const SubstrateGrid_1 = require("./views/screens/SubstrateGrid");
-const VisualDisplay_1 = require("./views/screens/VisualDisplay");
-const MainInterface_1 = require("./components/interface/MainInterface");
+const phaser_1 = __importDefault(require("phaser"));
+const Tone = __importStar(require("tone"));
+const TiLLI_1 = __importDefault(require("./views/TiLLI"));
+const InputHandler_1 = __importDefault(require("./components/manager/InputHandler"));
+const MainInterface_1 = __importDefault(require("./views/MainInterface"));
 exports.threeCanvas = document.getElementById('three');
 exports.phaseCanvas = document.getElementById('phase');
 exports.bezel = 13;
@@ -42,8 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.cameras.main.centerOn(0, 0);
             mainUI.scene.add('TiLLI', TiLLI_1.default);
             mainUI.scene.add('InputHandler', InputHandler_1.default);
-            mainUI.scene.add('SubstrateGrid', SubstrateGrid_1.default);
-            mainUI.scene.add('VisualDisplay', VisualDisplay_1.default);
             mainUI.scene.add('MainInterface', MainInterface_1.default);
         }
         create() {

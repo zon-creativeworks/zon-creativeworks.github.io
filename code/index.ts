@@ -4,10 +4,8 @@ import * as Tone from 'tone';
 
 /* * SCENE MODULES * */
 import TiLLI from './views/TiLLI';
-import InputHandler from './views/screens/InputHandler';
-import SubstrateGrid from './views/screens/SubstrateGrid';
-import VisualDisplay from './views/screens/VisualDisplay';
-import MainInterface from './components/interface/MainInterface';
+import InputHandler from './components/manager/InputHandler';
+import MainInterface from './views/MainInterface';
 
 /* * GLOBAL CANVAS REFS * */
 export const threeCanvas: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
@@ -54,8 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Sub-View Scenes
       mainUI.scene.add('TiLLI', TiLLI);
       mainUI.scene.add('InputHandler', InputHandler);
-      mainUI.scene.add('SubstrateGrid', SubstrateGrid);
-      mainUI.scene.add('VisualDisplay', VisualDisplay);
       mainUI.scene.add('MainInterface', MainInterface);
     }
 

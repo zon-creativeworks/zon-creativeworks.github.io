@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import AiDA from "../TiLLI";
+import AiDA from "../../views/TiLLI";
 
 
 // Manages user input and navigation

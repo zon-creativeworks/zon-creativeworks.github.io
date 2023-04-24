@@ -6,8 +6,6 @@ const index_1 = require("../../index");
 const TAARenderPass_1 = require("three/examples/jsm/postprocessing/TAARenderPass");
 const PostProcessing_1 = require("../manager/PostProcessing");
 const Tone = require("tone");
-const TilliBot_Avatar_1 = require("../images/TilliBot_Avatar");
-const Tapehead_Avatar_1 = require("../images/Tapehead_Avatar");
 const TexturePass_1 = require("three/examples/jsm/postprocessing/TexturePass");
 class MainInterface extends Phaser.Scene {
     constructor() {
@@ -637,18 +635,6 @@ class MainInterface extends Phaser.Scene {
         const slotArray = [];
         this.menuSlotNodes.angle = -90;
         const slotPrograms = [
-            {
-                title: 'TiLLI',
-                icon: 'tillibot',
-                avatar: new TilliBot_Avatar_1.default(0, 0, this),
-                description: 'The Talking Large-Language Interface is able to converse with users to help them manage Notes, Tasks, Reminders and serves as an AI-powered personal assistant.'
-            },
-            {
-                title: 'Tapehead',
-                icon: 'tapehead',
-                avatar: new Tapehead_Avatar_1.default(0, 0, this),
-                description: 'Tapehead provides features for audio-based notes, messaging, as well as raw sampling.'
-            },
             {
                 title: 'J-Rod',
                 icon: 'eben',

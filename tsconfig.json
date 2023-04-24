@@ -16,6 +16,7 @@
     "disableSizeLimit": true,
     "outDir": "public/scripts",
     "moduleResolution": "nodenext",
+    "esModuleInterop": true,
   },
   "include": ["code/"],
   "exclude": ["**/*.spec.ts"]
