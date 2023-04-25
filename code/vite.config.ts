@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import replace from '@rollup/plugin-replace';
 
+
 export default defineConfig({
   server: { 
     https: false,
@@ -8,11 +9,15 @@ export default defineConfig({
     cors: true,
   },
   
+  root: "./",
   build: {
-    minify: true,
     manifest: false,
-    assetsDir: "public",
     outDir: "../",
+    assetsDir: "public",
+
+    commonjsOptions: {
+      requireReturnsDefault: true,
+    },
 
     rollupOptions: {
       plugins: [
