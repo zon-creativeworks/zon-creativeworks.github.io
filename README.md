@@ -1,10 +1,5 @@
 # _TiLLI - Talking Large-Language Interface_
- TiLLI Is a tool designed for efficient human-AI cooperation and collaboration by means of spoken and synthesized speech. It serves the functions of:
-- vocal interface for notes and reminders
-- audio sampling and recording
-- real-time language translation
-- spatial navigation
-- general AI Companion
+ A virtual AI Interface that talks and can remember things. Designed by a neurodivergent, for neurodivergent people.
 
 ---
 
@@ -14,5 +9,5 @@
 ---
 
 # _Shadow Avatars_
-TiLLI comes equipped with a default shadow-bot avatar, with the option to purchase others. These
-avatars can be trained and grown over time with regular usage, and can even evolve similar to a tomagachi.
+TiLLI comes equipped with a default shadow avatar, with the option to purchase others. These
+avatars can be trained and grown over time with regular usage of that app in accomplishing goals and tasks, and can even evolve similar to a tomagachi.
