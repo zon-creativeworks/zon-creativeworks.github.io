@@ -1,9 +1,10 @@
 import * as Tone from 'tone';
 import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { threeCanvas, phaseCanvas } from '../index';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { 
   AdaptiveToneMappingPass, 
   AfterimagePass, 
@@ -18,7 +19,7 @@ import {
 export default class MainInterface extends Phaser.Scene {
 
   // Props - ThreeJS
-  private camera3D: THREE.OrthographicCamera;
+  private camera3D: THREE.PerspectiveCamera;
   private rootScene = new THREE.Scene();
   private rootRenderer: THREE.WebGLRenderer;
   private phaseTexture: THREE.CanvasTexture;
@@ -36,10 +37,7 @@ export default class MainInterface extends Phaser.Scene {
   // Props - Globals
   public res: {w: number, h: number}
   public isMobile: boolean;
-  public nearField: number = 0.1e-3;
-  public distField: number = 10.0e3;
   public aspectRatio: number;
-  public fieldOfView: number = 60;
   public isQuietTime: boolean = false;
 
   // Pointer Tracking
@@ -85,6 +83,9 @@ export default class MainInterface extends Phaser.Scene {
     });
     this.rootRenderer.setSize(this.res.w, this.res.h);
     this.rootRenderer.setPixelRatio(window.devicePixelRatio);
+    this.rootRenderer.physicallyCorrectLights = true;
+    this.rootRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.rootRenderer.toneMappingExposure = 0.6;
 
     // The 2D texture from the Phaser Canvas that will be rendered into the final composition
     this.phaseTexture = new THREE.CanvasTexture(phaseCanvas);
@@ -123,11 +124,8 @@ export default class MainInterface extends Phaser.Scene {
     this.events.on('preupdate', () => this.cursor = {x: this.input.activePointer.worldX, y: this.input.activePointer.worldY});
     
     // The camera used to render items from orthographic "flatland" sprites into perspective 3D
-    this.camera3D = new THREE.OrthographicCamera(
-      -this.res.w /2, +this.res.w /2,
-      -this.res.h / 2, +this.res.h / 2,
-      0.001, 10000
-    );
+    this.camera3D = new THREE.PerspectiveCamera(42, this.res.w / this.res.h, 1e-4, +1e4);
+    this.camera3D.position.z = 4.2;
 
     const pxInset = 26;
     const maxCornerTL = new Phaser.Math.Vector2(-(this.res.w / 2) + pxInset, -(this.res.h / 2) + pxInset);
@@ -142,6 +140,23 @@ export default class MainInterface extends Phaser.Scene {
     // Define the 2D camera
     this.camera2D = this.cameras.main;
     this.camera2D.centerOn(0, 0);
+
+    // Load the main 3D Scene
+    const loader = new GLTFLoader().setPath('code/res/models/');
+    loader.load('Hobb.glb', model => {
+      
+      this.add.circle(-300, 0, 36, 0xFFFFFF);
+      this.camera3D.lookAt(model.scene.position);
+      model.scene.position.set(0, -0.1, 1);
+      model.scene.scale.set(0.6, 0.6, 0.6);
+
+      setTimeout(() => {
+        this.rootScene.add(
+          model.scene, 
+          new THREE.AmbientLight(new THREE.Color(255, 255, 255), 0.03)
+        );
+      }, 888);
+    });
   }
 
   // Called once Phaser.Scene has been fully initialized; Useful for setting up physics, etc.
@@ -315,7 +330,7 @@ export default class MainInterface extends Phaser.Scene {
     const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
     // Base renders to apply all post-processing FX to
-    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xAF77AF, 0.54);
+    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xC2A9FF, 0.36);
     const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
 
     // Bloom & Glow FX
@@ -341,7 +356,7 @@ export default class MainInterface extends Phaser.Scene {
     comp.addPass(hazyGlow);
     comp.addPass(normalize);
     comp.addPass(retroCRT);
-    comp.addPass(FXAA);
+    // comp.addPass(FXAA);
 
     // periodically reset the internal clock for the retroCRT shader to mitigating banding;
     setInterval(() => {
