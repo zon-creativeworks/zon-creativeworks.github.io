@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 import * as THREE from 'three';
-import Matter from 'matter-js';
+import svgToPhaserPath from 'svg-to-phaser-path';
 import { threeCanvas, phaseCanvas } from '../index';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
@@ -167,6 +167,8 @@ export default class MainInterface extends Phaser.Scene {
   }
 
   create(): void {
+    // Make physicals clickable
+    this.matter.add.pointerConstraint();
 
     // MatterJS seems to not support SVGs as it claims; and Phaser does not support using them to create points
     // Instead, going to just use simple shape approximations
@@ -174,6 +176,8 @@ export default class MainInterface extends Phaser.Scene {
     const circleBody = this.matter.add.circle(circle.x, circle.y, circle.width / 2);
     circle.body = circleBody;
     this.events.on('update', () => circle.setPosition(circleBody.position.x, circleBody.position.y));
+
+    
 
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
