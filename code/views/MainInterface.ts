@@ -109,6 +109,10 @@ export default class MainInterface extends Phaser.Scene {
     this.load.svg('gyro', 'code/res/icons/sensors/gyro.svg', {scale: 0.16});
     this.load.svg('settings', 'code/res/icons/settings.svg', {scale: 0.06});
     this.load.svg('transcript', 'code/res/icons/transcript.svg', {scale: 0.06});
+
+    // Spike - Create a phaser game object with physics body from an SVG
+    this.load.xml('circle-xml', 'code/res/svg/circle.svg');
+    this.load.svg('circle-svg', 'code/res/svg/circle.svg', { scale: 1 });
   }
 
   init(): void {
@@ -159,8 +163,11 @@ export default class MainInterface extends Phaser.Scene {
     });
   }
 
-  // Called once Phaser.Scene has been fully initialized; Useful for setting up physics, etc.
   create(): void {
+
+    // Create an image and physics body from the circle.svg file
+    const circleSVG = this.add.image(+300, 0, 'circle-svg');
+
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
     const aye = new Tone.Player('code/res/audio/aye.wav').connect(mainVolume);
