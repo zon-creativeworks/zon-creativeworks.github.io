@@ -3,12 +3,6 @@ import replace from '@rollup/plugin-replace';
 
 
 export default defineConfig({
-  server: { 
-    https: false,
-    port: 3000,
-    cors: true,
-  },
-  
   root: "./",
   build: {
     manifest: false,

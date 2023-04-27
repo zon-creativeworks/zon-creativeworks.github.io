@@ -1,5 +1,6 @@
 import * as Tone from 'tone';
 import * as THREE from 'three';
+import Matter from 'matter-js';
 import { threeCanvas, phaseCanvas } from '../index';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
@@ -39,6 +40,9 @@ export default class MainInterface extends Phaser.Scene {
   public isMobile: boolean;
   public aspectRatio: number;
   public isQuietTime: boolean = false;
+
+  // Typecasting for the matter-js lib since none are built in
+  private tMatter: typeof MatterJS;
 
   // Pointer Tracking
   public cursor: {x: number, y: number} = { x: 0, y:0 };
@@ -110,8 +114,7 @@ export default class MainInterface extends Phaser.Scene {
     this.load.svg('settings', 'code/res/icons/settings.svg', {scale: 0.06});
     this.load.svg('transcript', 'code/res/icons/transcript.svg', {scale: 0.06});
 
-    // Spike - Create a phaser game object with physics body from an SVG
-    this.load.xml('circle-xml', 'code/res/svg/circle.svg');
+    // Test SVG
     this.load.svg('circle-svg', 'code/res/svg/circle.svg', { scale: 1 });
   }
 
@@ -165,8 +168,12 @@ export default class MainInterface extends Phaser.Scene {
 
   create(): void {
 
-    // Create an image and physics body from the circle.svg file
-    const circleSVG = this.add.image(+300, 0, 'circle-svg');
+    // MatterJS seems to not support SVGs as it claims; and Phaser does not support using them to create points
+    // Instead, going to just use simple shape approximations
+    const circle = this.add.image(+300, 0, 'circle-svg');
+    const circleBody = this.matter.add.circle(circle.x, circle.y, circle.width / 2);
+    circle.body = circleBody;
+    this.events.on('update', () => circle.setPosition(circleBody.position.x, circleBody.position.y));
 
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();

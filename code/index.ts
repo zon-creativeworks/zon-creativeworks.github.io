@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
       default: 'matter',
       matter: {
         debug: true,
-        gravity: { x: 0, y: 0 },
+        gravity: { x: 0, y: 0.3 },
+        
         // @ts-ignore - false error due to incomplete type declarations in Phaser;
         plugins: {
           attractors: true
