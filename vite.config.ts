@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import replace from '@rollup/plugin-replace';
+import path from 'path';
 
 
 export default defineConfig({
@@ -7,10 +8,15 @@ export default defineConfig({
     https: false,
     port: 3000,
     cors: true,
-    base: "./"
+    base: "./",
   },
   
   root: "./",
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './code')
+    }
+  },
 
   build: {
     manifest: true,
