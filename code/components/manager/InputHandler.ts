@@ -33,6 +33,7 @@ export default class InputHandler extends Phaser.Scene {
       zoomDelta > 0 && this.game.events.emit('zoom-out');
     });
 
+
     // * Grid Panning Control
     // Grid Panning is performed either by tethered cursor or by keyed input
     // ~Single-Tap + drag for grid panning
