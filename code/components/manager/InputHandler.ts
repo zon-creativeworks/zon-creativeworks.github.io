@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import AiDA from "../../views/TiLLI";
 
 
 // Manages user input and navigation
@@ -53,9 +52,6 @@ export default class InputHandler extends Phaser.Scene {
     // R-Edge -> Operator Transcript   - Text Dialogue of active conversations between operator and AiDA
     const upClick = (at: { x: Number, y: number }) => { this.game.events.emit('upclick', at) };
     const dnClick = (at: { x: Number, y: number }) => { this.game.events.emit('dnclick', at) };
-
-    // ref to main app
-    const AiDA = this.scene.get('AiDA') as AiDA;
     
     // * Click Input
     this.input.addListener('pointerup', (pointer: Phaser.Input.Pointer) => {
