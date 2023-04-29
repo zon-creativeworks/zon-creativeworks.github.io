@@ -8,13 +8,15 @@ export default defineConfig({
     https: false,
     port: 3000,
     cors: true,
-    base: "./",
+    fs: {
+      allow: ["code/", "public/", "./"]
+    }
   },
   
   root: "./",
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './code')
+      'code': path.resolve(__dirname, './code')
     }
   },
 
