@@ -1,0 +1,18 @@
+{
+  "code/res/icons/icon_192x192.png": {
+    "file": "assets/icon_192x192-f91fe82b.png",
+    "src": "code/res/icons/icon_192x192.png"
+  },
+  "index.css": {
+    "file": "assets/index-b942c883.css",
+    "src": "index.css"
+  },
+  "index.html": {
+    "file": "assets/index-f0122cff.js",
+    "src": "index.html",
+    "isEntry": true,
+    "css": [
+      "assets/index-b942c883.css"
+    ]
+  }
+}

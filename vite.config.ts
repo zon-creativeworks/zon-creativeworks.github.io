@@ -7,13 +7,15 @@ export default defineConfig({
     https: false,
     port: 3000,
     cors: true,
+    base: "./"
   },
   
   root: "./",
+
   build: {
-    manifest: false,
-    outDir: "../",
-    assetsDir: "public",
+    manifest: true,
+    outDir: "public",
+    assetsDir: "assets",
 
     commonjsOptions: {
       requireReturnsDefault: true,
@@ -22,15 +24,14 @@ export default defineConfig({
     rollupOptions: {
       plugins: [
         replace({
-          preventAssignment: true,
-
           //  Toggle the booleans here to enable / disable Phaser 3 features:
           'typeof CANVAS_RENDERER': "'true'",
           'typeof WEBGL_RENDERER': "'true'",
           'typeof EXPERIMENTAL': "'true'",
           'typeof PLUGIN_CAMERA3D': "'false'",
           'typeof PLUGIN_FBINSTANT': "'false'",
-          'typeof FEATURE_SOUND': "'true'"
+          'typeof FEATURE_SOUND': "'true'",
+          preventAssignment: true,
         })
       ],
       output: {

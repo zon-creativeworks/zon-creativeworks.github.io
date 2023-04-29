@@ -1,13 +1,12 @@
 {
-  "name": "tilli",
-  "version": "0.0.2",
-  "description": "The Talking Large-Language Interface",
-  "main": "src/index.ts",
+  "name": "nlucis.github.io",
+  "version": "0.0.1",
+  "description": "A Body-Doubling AI Companion",
+  "main": "code/index.ts",
   "directories": {
-    "src": "src/",
+    "src": "code/",
     "public": "/public/",
-    "test": "test",
-    "build": "dist/"
+    "test": "test"
   },
   "scripts": {
     "pwa": "npx workbox generateSW workbox.config",
