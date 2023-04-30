@@ -11,15 +11,19 @@ import {
   FilmPass, 
   GlitchPass, 
   OutlinePass,
-  UnrealBloomPass 
+  UnrealBloomPass, 
+  AnaglyphEffect,
+  HalftonePass
 } from '../components/manager/PostProcessing';
+import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 
 
 export default class MainInterface extends Phaser.Scene {
 
   // Props - ThreeJS
-  private camera3D: THREE.OrthographicCamera;
   private rootScene = new THREE.Scene();
+  private camera3D: THREE.PerspectiveCamera;
   private rootRenderer: THREE.WebGLRenderer;
   private phaseTexture: THREE.CanvasTexture;
 
@@ -36,10 +40,6 @@ export default class MainInterface extends Phaser.Scene {
   // Props - Globals
   public res: {w: number, h: number}
   public isMobile: boolean;
-  public nearField: number = 0.1e-3;
-  public distField: number = 10.0e3;
-  public aspectRatio: number;
-  public fieldOfView: number = 60;
   public isQuietTime: boolean = false;
 
   // Pointer Tracking
@@ -75,16 +75,25 @@ export default class MainInterface extends Phaser.Scene {
       w: window.innerWidth, 
       h: window.innerHeight,
     };
-    this.aspectRatio = this.res.w / this.res.h;
 
     // The main renderer that will be used for compositing and applying FX
     this.rootRenderer = new THREE.WebGLRenderer({ 
+
+      canvas: threeCanvas,
+      
       alpha: true,
+      depth: false,
       antialias: true, 
-      canvas: threeCanvas, 
+      logarithmicDepthBuffer: true,
+
+      precision: 'highp',
+      powerPreference: 'high-performance',
     });
+
     this.rootRenderer.setSize(this.res.w, this.res.h);
     this.rootRenderer.setPixelRatio(window.devicePixelRatio);
+    this.rootRenderer.toneMappingExposure = 0.9;
+    this.rootRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     // The 2D texture from the Phaser Canvas that will be rendered into the final composition
     this.phaseTexture = new THREE.CanvasTexture(phaseCanvas);
@@ -123,17 +132,8 @@ export default class MainInterface extends Phaser.Scene {
     this.events.on('preupdate', () => this.cursor = {x: this.input.activePointer.worldX, y: this.input.activePointer.worldY});
     
     // The camera used to render items from orthographic "flatland" sprites into perspective 3D
-    this.camera3D = new THREE.OrthographicCamera(
-      -this.res.w /2, +this.res.w /2,
-      -this.res.h / 2, +this.res.h / 2,
-      0.001, 10000
-    );
-
-    const pxInset = 26;
-    const maxCornerTL = new Phaser.Math.Vector2(-(this.res.w / 2) + pxInset, -(this.res.h / 2) + pxInset);
-    const maxCornerTR = new Phaser.Math.Vector2(+(this.res.w / 2) - pxInset, -(this.res.h / 2) + pxInset);
-    const maxCornerBL = new Phaser.Math.Vector2(-(this.res.w / 2) + pxInset, +(this.res.h / 2) - pxInset);
-    const maxCornerBR = new Phaser.Math.Vector2(+(this.res.w / 2) - pxInset, +(this.res.h / 2) - pxInset);
+    this.camera3D = new THREE.PerspectiveCamera(42, this.res.w / this.res.h, 1e-4, 1e4);
+    this.camera3D.position.set(0, 0, 90);
 
         // Text Interface SFX
     const open = new Tone.Player('code/res/audio/terminalOpen.wav').toDestination();
@@ -314,41 +314,117 @@ export default class MainInterface extends Phaser.Scene {
     const comp = new EffectComposer(this.rootRenderer);
     const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
+
+    const colorScreen = ColorifyShader;
+    colorScreen.uniforms.color = new THREE.Uniform(new THREE.Color(1.0, 0.8, 0.2));
+
+    const chromaticAberration = new AnaglyphEffect(this.rootRenderer, this.res.w, this.res.h);
+    // this.add.circle(0, 0, 200, 0xFFFFFF);
+
     // Base renders to apply all post-processing FX to
-    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xAF77AF, 0.54);
+    // const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0x9A5CBF, 0.64);
+    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xFFFFFF, 0.64);
     const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
+    const shdrPass = new ShaderPass(colorScreen);
 
     // Bloom & Glow FX
-    const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
+    const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.012);
 
     // Aesthetic FX
-    const retroCRT = new FilmPass(0.35, 0.64, window.screen.height * 2, 0);
-    const timeHaze = new AfterimagePass(0.3);
-    const normalize = new AdaptiveToneMappingPass(true, 64);
+    const retroCRT = new FilmPass(0.64, 0, 0, 0);
+    const timeHaze = new AfterimagePass(0.36);
+    const halftone = new HalftonePass(1, 1, {
+      blending: 1, 
+      blendingMode: THREE.NormalBlending,
+
+      rotateR: 0, 
+      rotateG: 0, 
+      rotateB: 0, 
+      greyscale: false, 
+
+      shape: 4,
+      radius: 3,  
+    });
 
     // Glitch effect to be triggered during scene transitions
     const transGlitch = new GlitchPass(-1);
     transGlitch.randX = 0.001;
     transGlitch.curF = 0.00001;
     transGlitch.enabled = false;
+
+		const textureLoader = new THREE.TextureLoader();
+
+		const envMap = textureLoader.load( 'code/res/hdri/glasswater.jpg' );
+		envMap.mapping = THREE.EquirectangularReflectionMapping;
+
+    const prismG = new THREE.IcosahedronGeometry(10, 0);
+    const inkAndGrain = new THREE.MeshPhysicalMaterial({
+
+      color: 0x252525,
+      opacity: 1.0,
+      blending: THREE.NormalBlending,
+
+      metalness: 1.0,
+      roughness: 0.0,
+
+      reflectivity: 1.0,
+
+      // clearcoat: 1.0,
+      // clearcoatRoughness: 0.0,
+      dithering: true,
+      flatShading: true,
+
+      toneMapped: true,
+      transparent: true,
+      precision: 'highp',
+      
+      envMap: envMap,
+      envMapIntensity: 3,
+    });
+
+    const prism = new THREE.Mesh(prismG, inkAndGrain);
+
+    // Main Light Rig
+    const spotA = new THREE.SpotLight(0xACACAC, 240, 360, 90, 1, 45);
+    spotA.position.set(0, 0, 30);
+
+    this.rootScene.add(
+      prism, 
+
+      spotA
+    );
+
+    const lineArt = new OutlinePass(new THREE.Vector2(this.res.w, this.res.h), this.rootScene, this.camera3D, [prism]);
+    lineArt.edgeThickness = 2;
+    lineArt.edgeStrength = 255;
+    lineArt.visibleEdgeColor = new THREE.Color(1, 1, 1);
+
+    this.events.on('update', () => prism.rotation.y+=0.1);
     
     // Post-Processing "stack" - ordering sensitive
     comp.addPass(rootPass);
     comp.addPass(tx2DPass);
-    // comp.addPass(contours);
-    comp.addPass(transGlitch);
-    comp.addPass(timeHaze);
-    comp.addPass(hazyGlow);
-    comp.addPass(normalize);
-    comp.addPass(retroCRT);
     comp.addPass(FXAA);
+
+    comp.addPass(lineArt);
+    comp.addPass(halftone); 
+    comp.addPass(shdrPass);
+
+    comp.addPass(hazyGlow);
+    comp.addPass(timeHaze);
+    comp.addPass(retroCRT);
+
+    comp.addPass(transGlitch);
 
     // periodically reset the internal clock for the retroCRT shader to mitigating banding;
     setInterval(() => {
       retroCRT.uniforms['time'] = new THREE.Uniform(0);
     }, 3000);
 
-    this.events.on('update', () => {comp.render()});
+    this.events.on('update', () => {
+      comp.render();
+      // chromaticAberration.render(this.rootScene, this.camera3D);
+    });
   }
 
   update(): void {
