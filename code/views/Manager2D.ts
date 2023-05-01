@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
-export default class MainInterface extends Phaser.Scene {
+export default class Manager2D extends Phaser.Scene {
 
   // Props - Audio
   private onlineTD = new Date();
@@ -38,7 +38,7 @@ export default class MainInterface extends Phaser.Scene {
   }
 
   constructor() {
-    super('MainInterface');
+    super('Manager2D');
 
     this.res = {
       w: window.innerWidth, 

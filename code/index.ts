@@ -4,7 +4,7 @@ import * as Tone from 'tone';
 import Manager3D from './views/Manager3D';
 
 /* * SCENE MODULES * */
-import MainInterface from './views/MainInterface';
+import Manager2D from './views/Manager2D';
 import InputHandler from './components/manager/InputHandler';
 
 const target: HTMLCanvasElement = document.getElementById('phase') as HTMLCanvasElement;
@@ -84,19 +84,16 @@ document.addEventListener('DOMContentLoaded', () => {
     transparent: true,
     disableContextMenu: true,
   };
-
-  const mainUI = new Phaser.Game(phaserConfig);
-  mainUI.scene.add('InputHandler', InputHandler);
-  mainUI.scene.add('MainInterface', MainInterface);
-
   const clientConfig = {};
   const controlConfig = {};
 
-  mainUI.scene.run('InputHandler', controlConfig);
-  mainUI.scene.run('MainInterface', clientConfig);
-});
+  const mainUI = new Phaser.Game(phaserConfig);
+  mainUI.scene.add('Manager2D', Manager2D);
+  mainUI.scene.add('InputHandler', InputHandler);
 
-export const phaseCanvas = target;
+  mainUI.scene.run('Manager2D', clientConfig);
+  mainUI.scene.run('InputHandler', controlConfig);
+});
 
 // TODO: Add DTMF Tone Generator
 // TODO: Setup IndexedDB
