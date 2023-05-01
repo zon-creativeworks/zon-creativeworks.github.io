@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     staticPop = new Tone.Noise('white');
     staticPop.connect(staticPop_vol);
 
-    buttonClick = new Tone.Player('code/res/audio/ButtonClick.wav');
+    buttonClick = new Tone.Player('code/assets/audio/ButtonClick.wav');
     buttonClick.connect(buttonClick_vol);
 
-    capacitorChargeUp = new Tone.Player('code/res/audio/TVCapCharge.wav');
+    capacitorChargeUp = new Tone.Player('code/assets/audio/TVCapCharge.wav');
     capacitorChargeUp.connect(capacitorChargeUp_vol);
     
     // Fade-In background static from -100 dB to -24 dB over 0.5 seconds

@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
+import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader';
 import { 
   AdaptiveToneMappingPass, 
   AfterimagePass, 
@@ -14,8 +16,8 @@ import {
   HalftonePass,
   OutlineEffect
 } from '../components/manager/PostProcessing';
-import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+
+
 
 export default class Manager3D {
   public meshes: { [key: string]: THREE.Mesh } = {};
@@ -39,16 +41,18 @@ export default class Manager3D {
     this.setup();
   }
 
-  setup(): void {
+  private setup(): void {
 
     // Setup the UI Canvas Texture
     const phaserCanvas = document.getElementById('phase') as HTMLCanvasElement;
     this.UI = new THREE.CanvasTexture(phaserCanvas);
-    this.UI.needsUpdate = true;
+    this.UI.wrapS = THREE.RepeatWrapping;
 
     const geo = new THREE.IcosahedronGeometry(1.6, 0);
     const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
-    const ico = new THREE.Mesh(geo, flatWhite);
+    const flatBlack = new THREE.MeshBasicMaterial({ color: 0x000000, reflectivity: 0.0 });
+
+    const ico = new THREE.Mesh(geo, flatBlack);
     this.meshes['ico'] = ico;
 
     ico.position.set(0, 0, -10);
@@ -60,7 +64,7 @@ export default class Manager3D {
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
     const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
-    const UI2DPass = new TexturePass(this.UI, 0.9);
+    const UI2DPass = new TexturePass(this.UI, 0.6);
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -76,9 +80,6 @@ export default class Manager3D {
     transGlitch.enabled = false;
 
 		const textureLoader = new THREE.TextureLoader();
-
-		const envMap = textureLoader.load( 'code/res/hdri/glasswater.jpg' );
-		envMap.mapping = THREE.EquirectangularReflectionMapping;
 
     const prismG = new THREE.IcosahedronGeometry(20, 9);
     const inkAndGrain = new THREE.MeshPhysicalMaterial({
@@ -99,8 +100,6 @@ export default class Manager3D {
       transparent: true,
       precision: 'highp',
       
-      envMap: envMap,
-      envMapIntensity: 1,
       side: THREE.BackSide,
     });
 
@@ -121,7 +120,7 @@ export default class Manager3D {
       prism, 
       cube,
       spotA,
-      // new THREE.PointLight(0xFFFFFF, 1)
+      new THREE.PointLight(0xFFFFFF, 1)
     );
 
     const lineArt = new OutlinePass(new THREE.Vector2(vec2res.x, vec2res.y), this.scene, this.camera, [prism]);
@@ -132,10 +131,10 @@ export default class Manager3D {
 
     const FXAntiAlias = FXAA;
     FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(new THREE.Vector2(vec2res.x, vec2res.y));
-    console.debug(FXAntiAlias.uniforms)
     
     // TAA Base Pass
     this.composer.addPass(rootPass);
+    this.composer.addPass(UI2DPass);
     this.composer.addPass(FXAntiAlias);
     
     // Initial FX
@@ -143,14 +142,11 @@ export default class Manager3D {
     this.composer.addPass(hazyGlow);
 
     // Final FX
-    this.composer.addPass(UI2DPass);
     this.composer.addPass(retroCRT);
     this.composer.addPass(timeHaze);
 
     // Dynamic FX
     this.composer.addPass(transGlitch);
-
-    // this.add.circle(0, 0, 60, 0x000000);
 
     // periodically reset the internal clock for the retroCRT shader to mitigating banding;
     setInterval(() => {
@@ -163,13 +159,13 @@ export default class Manager3D {
     this.animate();
   }
 
-  update(): void {
+  private update(): void {
     this.UI.needsUpdate = true;
     this.meshes['ico'].rotation.y += 0.1;
     this.meshes['prism'].rotation.y += 0.01;
   }
 
-  animate(): void {
+  private animate(): void {
     const doRender = () => {
       requestAnimationFrame(doRender);
       this.update();
