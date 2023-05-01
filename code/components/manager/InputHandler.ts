@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import AiDA from "../../views/TiLLI";
 
 
 // Manages user input and navigation
@@ -10,17 +9,11 @@ export default class InputHandler extends Phaser.Scene {
     this.cameras.main.centerOn(0, 0);
   }
 
-  public preload(): void {
-    this.load.audio('affirm', '/assets/audio/affirm.wav');
-  }
   // Add cursor event handling
   public create(): void {
     // Physics paralogue for cursor
     this.matter.add.pointerConstraint();
     this.game.cache.physics.add('matter', this.matter);
-
-    // Add Audio
-    const affirmationTone = this.sound.add('affirm');
 
     // * Zoom Control
     this.input.addListener('wheel', (wheel: Phaser.Input.Pointer) => {
@@ -44,17 +37,9 @@ export default class InputHandler extends Phaser.Scene {
     // Dragging upward moves between the menu options when window is docked
     // Dragging in circle does the same when window is centered on a node
 
-    // * Mode Switch Control
-    // Mode switching is performed by edge pulling to activate:
-    // T-Edge -> Dictation Scrivener   - Takes notes and keeps reminders
-    // B-Edge -> Universal Translator  - Real-Time translation between two or more languages
-    // L-Edge -> Cymatic Sequencer     - Audio Sampling and Pattern Construction
-    // R-Edge -> Operator Transcript   - Text Dialogue of active conversations between operator and AiDA
     const upClick = (at: { x: Number, y: number }) => { this.game.events.emit('upclick', at) };
     const dnClick = (at: { x: Number, y: number }) => { this.game.events.emit('dnclick', at) };
 
-    // ref to main app
-    const AiDA = this.scene.get('AiDA') as AiDA;
     
     // * Click Input
     this.input.addListener('pointerup', (pointer: Phaser.Input.Pointer) => {
@@ -63,7 +48,6 @@ export default class InputHandler extends Phaser.Scene {
     });
     this.input.addListener('pointerdown', (pointer: Phaser.Input.Pointer) => {
       console.debug('Mouse Down Captured');
-      affirmationTone.play();
       dnClick({ x: pointer.worldX, y: pointer.worldY });
     });
 
