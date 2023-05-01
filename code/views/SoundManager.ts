@@ -1,5 +1,13 @@
 import Tone from 'tone';
+import * as THREE from 'three';
 export default class SoundManager {
+    // Props - Audio
+  private onlineTD = new Date();
+  private bell10M: Tone.Player;
+  private bell01H: Tone.Player;
+  private played01H: boolean = false;
+  private played10M: boolean = false;
+    public isQuietTime: boolean = false;
   constructor() {
 
     // Text Interface SFX

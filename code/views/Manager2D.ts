@@ -4,19 +4,14 @@ import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 
 export default class Manager2D {
 
-  // Props - Audio
-  private onlineTD = new Date();
-  private bell10M: Tone.Player;
-  private bell01H: Tone.Player;
-  private played01H: boolean = false;
-  private played10M: boolean = false;
+
 
   private camera: THREE.OrthographicCamera;
 
   // Props - Globals
   public res: {w: number, h: number}
   public isMobile: boolean;
-  public isQuietTime: boolean = false;
+
 
   // Pointer Tracking
   public cursor: {x: number, y: number} = { x: 0, y:0 };
