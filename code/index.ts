@@ -56,15 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
       fadeInStatic();
     });
 
-  // --- Three.js ---
-  const threeMan = new Manager3D();
-
   // --- Phaser 3 ---
   const phaserConfig = {
-    type: Phaser.WEBGL,
+    type: Phaser.CANVAS,
     canvas: target,
     antialias: true,
-    antialiasGL: true,
     physics: {
       default: 'matter',
       matter: {
@@ -91,8 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {
   mainUI.scene.add('Manager2D', Manager2D);
   mainUI.scene.add('InputHandler', InputHandler);
 
-  mainUI.scene.run('Manager2D', clientConfig);
+  mainUI.scene.run('Manager2D');
   mainUI.scene.run('InputHandler', controlConfig);
+
+  console.debug(mainUI.events);
+  // --- Three.js ---
+  mainUI.events.once("poststep", () => {
+    console.debug('poststep')
+    const threeMan = new Manager3D();
+  });
 });
 
 // TODO: Add DTMF Tone Generator

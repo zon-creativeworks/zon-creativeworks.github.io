@@ -25,8 +25,10 @@ export default class Manager3D {
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
   private scene: THREE.Scene = new THREE.Scene();
-  private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
+
   private UI: THREE.CanvasTexture;
+  private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
+  private phaser: HTMLCanvasElement = document.getElementById('phase') as HTMLCanvasElement;
 
   constructor() {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
@@ -34,19 +36,14 @@ export default class Manager3D {
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.8;
-    this.renderer.setClearColor(0x000000, 0.90);
+    this.renderer.toneMappingExposure = 1.0;
+    this.UI = new THREE.CanvasTexture(this.phaser);
 
     // Chain to Setup
     this.setup();
   }
 
   private setup(): void {
-
-    // Setup the UI Canvas Texture
-    const phaserCanvas = document.getElementById('phase') as HTMLCanvasElement;
-    this.UI = new THREE.CanvasTexture(phaserCanvas);
-    this.UI.wrapS = THREE.RepeatWrapping;
 
     const geo = new THREE.IcosahedronGeometry(1.6, 0);
     const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
@@ -64,7 +61,7 @@ export default class Manager3D {
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
     const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
-    const UI2DPass = new TexturePass(this.UI, 0.6);
+    const UI2DPass = new TexturePass(this.UI, 0.9);
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -134,11 +131,11 @@ export default class Manager3D {
     
     // TAA Base Pass
     this.composer.addPass(rootPass);
-    this.composer.addPass(UI2DPass);
     this.composer.addPass(FXAntiAlias);
     
     // Initial FX
     this.composer.addPass(lineArt);
+    this.composer.addPass(UI2DPass); // TODO: Figure out why this wont render correctly on iOS
     this.composer.addPass(hazyGlow);
 
     // Final FX
@@ -169,8 +166,9 @@ export default class Manager3D {
     const doRender = () => {
       requestAnimationFrame(doRender);
       this.update();
+      this.camera.updateProjectionMatrix();
+      this.camera.updateWorldMatrix(true, true);
       this.composer.render();
-      // this.renderer.render(this.scene, this.camera); // Last
     };
     doRender();
   }

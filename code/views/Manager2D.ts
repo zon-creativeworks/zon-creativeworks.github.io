@@ -1,4 +1,5 @@
 import * as Tone from 'tone';
+import Manager3D from './Manager3D';
 
 export default class Manager2D extends Phaser.Scene {
 
@@ -90,8 +91,6 @@ export default class Manager2D extends Phaser.Scene {
 
   // Called once Phaser.Scene has been fully initialized; Useful for setting up physics, etc.
   create(): void {
-
-    this.add.circle(-10, 0, 500, 0xFF00FF);
 
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
