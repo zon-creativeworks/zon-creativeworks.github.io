@@ -39,7 +39,7 @@ export default class Manager3D {
   }
 
   setup(): void {
-    const geo = new THREE.IcosahedronGeometry(2, 0);
+    const geo = new THREE.IcosahedronGeometry(1.6, 0);
     const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
     const ico = new THREE.Mesh(geo, flatWhite);
     this.meshes['ico'] = ico;
@@ -52,7 +52,7 @@ export default class Manager3D {
     this.composer = new EffectComposer(this.renderer);
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
-    const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.24);
+    const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
     // const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
 
     // Bloom & Glow FX
@@ -99,7 +99,7 @@ export default class Manager3D {
 
     const prism = new THREE.Mesh(prismG, inkAndGrain);
     this.meshes['prism'] = prism;
-    // prism.position.set(0, 0, -1000);
+    prism.position.set(0, 0, -100);
 
     // Main Lighting Rig
     const spotA = new THREE.SpotLight(0xFFFFFF, 90, 90, 180, 0, 12);
