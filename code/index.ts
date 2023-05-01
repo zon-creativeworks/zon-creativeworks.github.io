@@ -98,6 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         fadeInStatic();
       }
     }, 1);
+    
+    window.addEventListener('click', () => {
+      Tone.start();
+      
+      backgroundNoise.start();
+      fadeInStatic();
+    });
 
     // Basic ThreeJS Setup
     const scene = new THREE.Scene();
