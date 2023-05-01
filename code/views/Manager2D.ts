@@ -1,7 +1,8 @@
 import * as Tone from 'tone';
-import Manager3D from './Manager3D';
+import * as THREE from 'three';
+import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 
-export default class Manager2D extends Phaser.Scene {
+export default class Manager2D {
 
   // Props - Audio
   private onlineTD = new Date();
@@ -10,8 +11,7 @@ export default class Manager2D extends Phaser.Scene {
   private played01H: boolean = false;
   private played10M: boolean = false;
 
-  // Props - Phaser3
-  private camera: Phaser.Cameras.Scene2D.Camera;
+  private camera: THREE.OrthographicCamera;
 
   // Props - Globals
   public res: {w: number, h: number}
@@ -22,75 +22,40 @@ export default class Manager2D extends Phaser.Scene {
   public cursor: {x: number, y: number} = { x: 0, y:0 };
   public getCursor(): {x: number, y: number} { return this.cursor };
 
-  // Interactive Element - Callback Boilerplate
-  public handleInteraction(area: Phaser.Geom.Circle, handlers: { 
-    onHover?: (cPos: {x: number, y: number}) => void, 
-    onClick?: (cPos: {x: number, y: number}) => void, 
-    onTouch?: (cPos: {x: number, y: number}) => void
-  }): void {
-    const isHover = area.contains(this.cursor.x, this.cursor.y);
-    const isClick = isHover && this.input.activePointer.isDown;
-    const isTouch = this.input.mousePointer.wasTouch;
-      if (isHover && handlers.onHover) handlers.onHover(this.getCursor());
-      else
-      if ((isClick || isTouch) && handlers.onClick) handlers.onClick(this.getCursor());
-      else
-      if (isTouch && handlers.onTouch) handlers.onTouch(this.getCursor());
-  }
+  // // Interactive Element - Callback Boilerplate
+  // public handleInteraction(area: Phaser.Geom.Circle, handlers: { 
+  //   onHover?: (cPos: {x: number, y: number}) => void, 
+  //   onClick?: (cPos: {x: number, y: number}) => void, 
+  //   onTouch?: (cPos: {x: number, y: number}) => void
+  // }): void {
+  //   const isHover = area.contains(this.cursor.x, this.cursor.y);
+  //   const isClick = isHover && this.input.activePointer.isDown;
+  //   const isTouch = this.input.mousePointer.wasTouch;
+  //     if (isHover && handlers.onHover) handlers.onHover(this.getCursor());
+  //     else
+  //     if ((isClick || isTouch) && handlers.onClick) handlers.onClick(this.getCursor());
+  //     else
+  //     if (isTouch && handlers.onTouch) handlers.onTouch(this.getCursor());
+  // }
 
   constructor() {
-    super('Manager2D');
-
     this.res = {
       w: window.innerWidth, 
       h: window.innerHeight,
     };
   }
 
-  preload(): void {
-
-    // Avatar Base Vectors
-    this.load.svg('TiLLI', 'code/assets/icons/TiLLI.svg', {scale: 0.55});
-    this.load.svg('Tapehead-Base', 'code/assets/icons/TapeHead_NoSpoke.svg', {scale: 0.55});
-    this.load.svg('Tapehead-SpokeEye', 'code/assets/icons/TapeHead_SpokeOnly.svg', {scale: 0.55});
-
-    // Mode Icons
-    this.load.svg('eben', 'code/assets/icons/modes/eben.svg', {scale: 0.12});
-    this.load.svg('wandry', 'code/assets/icons/modes/wandry.svg', {scale: 0.2})
-    this.load.svg('tapehead', 'code/assets/icons/modes/tapehead.svg', {scale: 0.12});
-    this.load.svg('tillibot', 'code/assets/icons/modes/tillibot.svg', {scale: 0.12});
-    this.load.svg('robohobb', 'code/assets/icons/modes/robohobb.svg', {scale: 0.12});
-
-    // Sensors & Permissions Icons
-    this.load.svg('gyro', 'code/assets/icons/sensors/gyro.svg', {scale: 0.16});
-    this.load.svg('settings', 'code/assets/icons/settings.svg', {scale: 0.06});
-    this.load.svg('transcript', 'code/assets/icons/transcript.svg', {scale: 0.06});
-  }
-
-  init(): void {
-
-    // Bezel Glow - Doesn't ever need to be messed with
-    this.add.graphics({ lineStyle: { width: 2, color: 0xFFFFFF, alpha: 0.32 }})
-    .strokeRect(
-      -this.res.w / 2, -this.res.h / 2, 
-      window.innerWidth, window.innerHeight
-    );
-    this.add.circle(80, 0, 60, 0xFFFFFF, 1);
-
-    // Maintain a constant cursor position by world offset
-    this.events.on('preupdate', () => this.cursor = {x: this.input.activePointer.worldX, y: this.input.activePointer.worldY});
-
-        // Text Interface SFX
-    const open = new Tone.Player('code/assets/audio/terminalOpen.wav').toDestination();
-    const shut = new Tone.Player('code/assets/audio/terminalClose.wav').toDestination();
-    
-    // Define the 2D camera
-    this.camera = this.cameras.main;
-    this.camera.centerOn(0, 0);
+  load(): void {
+    const svgLoader = new SVGLoader();
+    const texLoader = new THREE.TextureLoader();
   }
 
   // Called once Phaser.Scene has been fully initialized; Useful for setting up physics, etc.
-  create(): void {
+  setup(): void {
+
+    // Text Interface SFX
+    const open = new Tone.Player('code/assets/audio/terminalOpen.wav').toDestination();
+    const shut = new Tone.Player('code/assets/audio/terminalClose.wav').toDestination();
 
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
@@ -118,10 +83,10 @@ export default class Manager2D extends Phaser.Scene {
     
     // Select and play a random BG SFX every 30 seconds to 2 minutes
     const playFX = () => setTimeout(() => {
-      const fxPlayer = (Phaser.Utils.Array.GetRandom(FX) as Tone.Player);
+      const fxPlayer = (FX[THREE.MathUtils.randInt(0, FX.length-1)] as Tone.Player);
       if (fxPlayer.state === 'stopped') fxPlayer.start();
       !this.isQuietTime && playFX();
-    }, Phaser.Math.Between(30_000, 120_000));
+    }, THREE.MathUtils.randInt(30_000, 120_000));
     playFX();
 
     // Timing Bells

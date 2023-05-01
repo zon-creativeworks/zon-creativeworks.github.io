@@ -15,7 +15,7 @@ import {
   AnaglyphEffect,
   HalftonePass,
   OutlineEffect
-} from '../components/manager/PostProcessing';
+} from '../components/controller/PostProcessing';
 
 
 
@@ -28,16 +28,13 @@ export default class Manager3D {
 
   private UI: THREE.CanvasTexture;
   private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
-  private phaser: HTMLCanvasElement = document.getElementById('phase') as HTMLCanvasElement;
 
   constructor() {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
     this.renderer = new THREE.WebGLRenderer({ canvas: this.target, alpha: true, antialias: true });
-    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
-    this.UI = new THREE.CanvasTexture(this.phaser);
 
     // Chain to Setup
     this.setup();
@@ -61,7 +58,8 @@ export default class Manager3D {
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
     const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
-    const UI2DPass = new TexturePass(this.UI, 0.9);
+    const UI2DPass = new TexturePass(this.UI, 0.8);
+    // this.UI.flipY = false;
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -75,8 +73,6 @@ export default class Manager3D {
     transGlitch.randX = 0.001;
     transGlitch.curF = 0.00001;
     transGlitch.enabled = false;
-
-		const textureLoader = new THREE.TextureLoader();
 
     const prismG = new THREE.IcosahedronGeometry(20, 9);
     const inkAndGrain = new THREE.MeshPhysicalMaterial({
@@ -111,7 +107,8 @@ export default class Manager3D {
     const boxG = new THREE.BoxGeometry(10, 10, 10);
     const FlatBlack = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const cube = new THREE.Mesh(boxG, FlatBlack);
-    cube.rotation.set(Phaser.Math.DegToRad(45), 0, 0);
+    
+    cube.rotation.set(THREE.MathUtils.degToRad(45), 0, 0);
 
     this.scene.add(
       prism, 
@@ -134,8 +131,8 @@ export default class Manager3D {
     this.composer.addPass(FXAntiAlias);
     
     // Initial FX
-    this.composer.addPass(lineArt);
     this.composer.addPass(UI2DPass); // TODO: Figure out why this wont render correctly on iOS
+    this.composer.addPass(lineArt);
     this.composer.addPass(hazyGlow);
 
     // Final FX
@@ -157,7 +154,6 @@ export default class Manager3D {
   }
 
   private update(): void {
-    this.UI.needsUpdate = true;
     this.meshes['ico'].rotation.y += 0.1;
     this.meshes['prism'].rotation.y += 0.01;
   }

@@ -1,13 +1,6 @@
 /* DEPENDENCIES */
-import Phaser from 'phaser';
 import * as Tone from 'tone';
 import Manager3D from './views/Manager3D';
-
-/* * SCENE MODULES * */
-import Manager2D from './views/Manager2D';
-import InputHandler from './components/manager/InputHandler';
-
-const target: HTMLCanvasElement = document.getElementById('phase') as HTMLCanvasElement;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -56,46 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       fadeInStatic();
     });
 
-  // --- Phaser 3 ---
-  const phaserConfig = {
-    type: Phaser.CANVAS,
-    canvas: target,
-    antialias: true,
-    physics: {
-      default: 'matter',
-      matter: {
-        debug: true,
-        gravity: { x: 0, y: 0 },
-
-        // @ts-ignore - false error due to incomplete type declarations in Phaser;
-        plugins: {
-          attractors: true
-        }
-      }
-    },
-    scale: {
-      mode: Phaser.Scale.RESIZE,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-    },
-    transparent: true,
-    disableContextMenu: true,
-  };
-  const clientConfig = {};
-  const controlConfig = {};
-
-  const mainUI = new Phaser.Game(phaserConfig);
-  mainUI.scene.add('Manager2D', Manager2D);
-  mainUI.scene.add('InputHandler', InputHandler);
-
-  mainUI.scene.run('Manager2D');
-  mainUI.scene.run('InputHandler', controlConfig);
-
-  console.debug(mainUI.events);
   // --- Three.js ---
-  mainUI.events.once("poststep", () => {
-    console.debug('poststep')
-    const threeMan = new Manager3D();
-  });
+  const threeMan = new Manager3D();
 });
 
 // TODO: Add DTMF Tone Generator
