@@ -89,6 +89,9 @@ export default class MainInterface extends Phaser.Scene {
 
   // Called once Phaser.Scene has been fully initialized; Useful for setting up physics, etc.
   create(): void {
+
+    this.add.circle(-100, 0, 100, 0xFF00FF);
+
     // System Audio Components
     const mainVolume = new Tone.Volume(-9).toDestination();
     const aye = new Tone.Player('code/res/audio/aye.wav').connect(mainVolume);

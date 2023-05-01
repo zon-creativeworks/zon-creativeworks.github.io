@@ -24,6 +24,7 @@ export default class Manager3D {
   private camera: THREE.PerspectiveCamera;
   private scene: THREE.Scene = new THREE.Scene();
   private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
+  private UI: THREE.CanvasTexture;
 
   constructor() {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
@@ -39,6 +40,12 @@ export default class Manager3D {
   }
 
   setup(): void {
+
+    // Setup the UI Canvas Texture
+    const phaserCanvas = document.getElementById('phase') as HTMLCanvasElement;
+    this.UI = new THREE.CanvasTexture(phaserCanvas);
+    this.UI.needsUpdate = true;
+
     const geo = new THREE.IcosahedronGeometry(1.6, 0);
     const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
     const ico = new THREE.Mesh(geo, flatWhite);
@@ -53,7 +60,7 @@ export default class Manager3D {
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
     const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
-    // const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
+    const UI2DPass = new TexturePass(this.UI, 0.9);
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -136,7 +143,7 @@ export default class Manager3D {
     this.composer.addPass(hazyGlow);
 
     // Final FX
-    // comp.addPass(tx2DPass);
+    this.composer.addPass(UI2DPass);
     this.composer.addPass(retroCRT);
     this.composer.addPass(timeHaze);
 
@@ -157,6 +164,7 @@ export default class Manager3D {
   }
 
   update(): void {
+    this.UI.needsUpdate = true;
     this.meshes['ico'].rotation.y += 0.1;
     this.meshes['prism'].rotation.y += 0.01;
   }

@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Phaser 3 ---
   const phaserConfig = {
-    type: Phaser.CANVAS,
+    type: Phaser.WEBGL,
     canvas: target,
     antialias: true,
     antialiasGL: true,
