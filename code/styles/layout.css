@@ -50,43 +50,6 @@ main {
   z-index:4;
 }
 
-overlay {
-  background-color: black;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100vw;
-  height: 100vh;
-  z-index: 4;
-  opacity: 1;
-  cursor: pointer;
-}
-overlay > span {
-  display: block;
-  color: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  font-size: 24pt;
-  font-weight: bold;
-  text-align: center;
-  margin-top: calc(30vh + 36pt);
-  text-shadow: #FFEC42 0px 0px 6px;
-  overflow: hidden;
-  font-family: 'Oswald', sans-serif;
-} 
-
-#typograph {
-  position: absolute;
-  top: 12px;
-  right: 42px;
-  width: 222px;
-  opacity: 0.12;
-  margin-top: 0;
-  font-size: 144pt;
-  color: rgba(255, 255, 255, 0.6);
-  text-shadow: rgba(20, 160, 255, 1) 0px 0px 12px;
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
 #phase {
   z-index: 2;
   opacity: 0 !important;
@@ -98,9 +61,10 @@ overlay > span {
 #three {
   z-index: 1;
   background-color: transparent;
-  pointer-events: none !important;
+  pointer-events: all;
   border-radius: 32px;
 }
+
 #bezel {
   top: 0px;
   left: 0px;

@@ -11,7 +11,7 @@
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="@/res/icons/icon_192x192.png">
+    <link rel="apple-touch-icon" href="code/res/icons/icon_192x192.png">
 
     <!-- Styles -->
     <link rel="stylesheet" href="code/styles/layout.css" preload>
@@ -24,14 +24,11 @@
   <body>
     <main id="app">
       <!-- The Bread & Butter -->
-      <canvas id="three"><!-- THREE JS - Main --></canvas>
-      <canvas id="phase"><!-- Phaser 3 - Main --></canvas>
+      <canvas id="three"></canvas>
+      <canvas id="phase"></canvas>
 
       <!-- A visual-only element for creating a bezel effect -->
       <div id="bezel" aria-hidden="true"></div>
-      <overlay>
-        <span id="typograph">}⁰{ ∆⁞ (●)</span>
-      </overlay>
     </main>
     <footer>
       <pre id="copyright-notice">
@@ -40,17 +37,15 @@
       </pre>
 
       <!-- PWA -->
-      <!-- <script type="module" src="sw.js"></script> -->
-
       <script type="text/javascript" id="app-installer">
         if ('serviceWorker' in window.navigator) {
 
-          // Register the Service Worker
-          window.addEventListener('DOMContentLoaded', () => {
-          navigator.serviceWorker.register('/sw.js', {
-            scope: "/"
-          });
-          });
+          // // Register the Service Worker
+          // window.addEventListener('DOMContentLoaded', () => {
+          // navigator.serviceWorker.register('/sw.js', {
+          //   scope: "/"
+          // });
+          // });
           
           // What should this do to prompt a user to install the app?
           window['onbeforeinstallprompt'] = () => {};
