@@ -13,7 +13,8 @@ import {
   OutlinePass,
   UnrealBloomPass, 
   AnaglyphEffect,
-  HalftonePass
+  HalftonePass,
+  OutlineEffect
 } from '../components/manager/PostProcessing';
 import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
@@ -77,7 +78,7 @@ export default class MainInterface extends Phaser.Scene {
     };
 
     // The main renderer that will be used for compositing and applying FX
-    this.rootRenderer = new THREE.WebGLRenderer({ 
+    this.rootRenderer = new THREE.WebGL1Renderer({ 
 
       canvas: threeCanvas,
       
@@ -92,7 +93,7 @@ export default class MainInterface extends Phaser.Scene {
 
     this.rootRenderer.setSize(this.res.w, this.res.h);
     this.rootRenderer.setPixelRatio(window.devicePixelRatio);
-    this.rootRenderer.toneMappingExposure = 0.9;
+    this.rootRenderer.toneMappingExposure = 1.2;
     this.rootRenderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     // The 2D texture from the Phaser Canvas that will be rendered into the final composition
@@ -192,7 +193,6 @@ export default class MainInterface extends Phaser.Scene {
 
         // Don't play the bells after 11PM
         this.isQuietTime = this.onlineTD.getHours() >= 23 || this.onlineTD.getHours() <= 7;
-
         if (!this.isQuietTime) {
           if (this.onlineTD.getMinutes() % 10 === 0) {
 
@@ -223,128 +223,20 @@ export default class MainInterface extends Phaser.Scene {
       window.screen.orientation.type === 'landscape-primary' && window.screen.orientation.angle === 90
     );
 
-    // Setup Spatial Movement and Orientation Detectors - Used for sound playback via gestures in Tapehead's Mandorla Mode 
-    type Sensor = {
-      activated : boolean,
-      hasReading: boolean,
-      onactivate: null | (() => void),
-      onerror: null | (() => void),
-      onreading: null | (() => void),
-      x: null | number,
-      y: null | number,
-      z: null | number,
-    };
-
-    let gyroscope: Sensor | undefined;
-    let accelerometer: Sensor | undefined;
-    let gravitySensor: Sensor | undefined;
-
-    if ('Accelerometer' in window) {
-      // @ts-ignore | object exists, type definitions are just lacking (as usual)
-      accelerometer = new window['Accelerometer']() as Sensor;
-    }
-    if ('Gyroscope' in window) {
-      // @ts-ignore | object exists, type definitions are just lacking (as usual)
-      gyroscope = new Gyroscope({ frequency: 60 }) as Sensor;
-    }
-    if ('GravitySensor' in window) {
-      // @ts-ignore | object exists, type definitions are just lacking (as usual)
-      gravitySensor = new window['GravitySensor'] as Sensor;
-    }
-
-    // Debugger Output - Display when TI is opened
-    let debugOutput = ``;
-    const Debugger = this.add.text(-(this.res.w / 2) + 36, -(this.res.h / 2) + 36, debugOutput, {
-      fontSize: '12px',
-      color: '#FFFFFF'
-    });
-
-    let deviceMotionX: number | null | undefined = -Infinity;
-    let deviceMotionY: number | null | undefined = -Infinity;
-    let deviceMotionZ: number | null | undefined = -Infinity;
-    let deviceRotationAlpha: number | null | undefined = -Infinity;
-    let deviceRotationBeta: number | null | undefined = -Infinity;
-    let deviceRotationGamma: number | null | undefined = -Infinity;
-    let deviceOrientationAlpha: number | null | undefined = -Infinity;
-    let deviceOrientationBeta: number | null | undefined = -Infinity;
-    let deviceOrientationGamma: number | null | undefined = -Infinity;
-
-    window.addEventListener('devicemotion', (dme: DeviceMotionEvent) => {
-      deviceMotionX = dme.acceleration?.x;
-      deviceMotionY = dme.acceleration?.y;
-      deviceMotionZ = dme.acceleration?.z;
-      deviceRotationAlpha = dme.rotationRate?.alpha;
-      deviceRotationBeta = dme.rotationRate?.beta;
-      deviceRotationGamma = dme.rotationRate?.gamma;
-    });
-    window.addEventListener('deviceorientation', (doe: DeviceOrientationEvent) => {
-      deviceOrientationAlpha = doe.alpha;
-      deviceOrientationBeta = doe.beta;
-      deviceOrientationGamma = doe.gamma;
-
-      // deviceOrientationAlpha && (this.activeAvatar.angle = Phaser.Math.Wrap(deviceOrientationAlpha, -180, +180) - 90);
-    });
-
-    let touchStart = false;
-    let touchEnd = false;
-    let touchCancel = false;
-    let dragStart = false;
-    let isDragging = false;
-    let dragEnd = false;
-    let doubleClick = false;
-
-    window.addEventListener('dblclick', () => {
-      doubleClick = true;
-      setTimeout(() => doubleClick = false, 1000);
-    });
-  
-    window.ontouchstart = () => {
-      touchStart = true;
-      touchEnd = false;
-    }
-    window.ontouchend = () => {
-      touchEnd = true;
-      touchStart = false;
-    };
-    window.ontouchmove = (m: TouchEvent) => {
-      console.debug(m)
-    };
-
     // Setup Post-Processing and FX for Three
     const comp = new EffectComposer(this.rootRenderer);
     const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
 
-    const colorScreen = ColorifyShader;
-    colorScreen.uniforms.color = new THREE.Uniform(new THREE.Color(1.0, 0.8, 0.2));
-
-    const chromaticAberration = new AnaglyphEffect(this.rootRenderer, this.res.w, this.res.h);
-    // this.add.circle(0, 0, 200, 0xFFFFFF);
-
-    // Base renders to apply all post-processing FX to
-    // const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0x9A5CBF, 0.64);
-    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0xFFFFFF, 0.64);
+    const rootPass = new TAARenderPass(this.rootScene, this.camera3D, 0x9A5CBF, 0.24);
     const tx2DPass = new TexturePass(this.phaseTexture, 0.9);
-    const shdrPass = new ShaderPass(colorScreen);
 
     // Bloom & Glow FX
-    const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.012);
+    const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
 
     // Aesthetic FX
-    const retroCRT = new FilmPass(0.64, 0, 0, 0);
+    const retroCRT = new FilmPass(0.36, 0.12, 2048, 0);
     const timeHaze = new AfterimagePass(0.36);
-    const halftone = new HalftonePass(1, 1, {
-      blending: 1, 
-      blendingMode: THREE.NormalBlending,
-
-      rotateR: 0, 
-      rotateG: 0, 
-      rotateB: 0, 
-      greyscale: false, 
-
-      shape: 4,
-      radius: 3,  
-    });
 
     // Glitch effect to be triggered during scene transitions
     const transGlitch = new GlitchPass(-1);
@@ -357,73 +249,87 @@ export default class MainInterface extends Phaser.Scene {
 		const envMap = textureLoader.load( 'code/res/hdri/glasswater.jpg' );
 		envMap.mapping = THREE.EquirectangularReflectionMapping;
 
-    const prismG = new THREE.IcosahedronGeometry(10, 0);
+    const prismG = new THREE.IcosahedronGeometry(20, 9);
     const inkAndGrain = new THREE.MeshPhysicalMaterial({
 
-      color: 0x252525,
+      color: 0xFFAC00,
       opacity: 1.0,
       blending: THREE.NormalBlending,
 
-      metalness: 1.0,
-      roughness: 0.0,
+      metalness: 0.0,
+      roughness: 0.3,
 
-      reflectivity: 1.0,
+      reflectivity: 0.8,
 
-      // clearcoat: 1.0,
-      // clearcoatRoughness: 0.0,
       dithering: true,
-      flatShading: true,
+      flatShading: false,
 
       toneMapped: true,
       transparent: true,
       precision: 'highp',
       
       envMap: envMap,
-      envMapIntensity: 3,
+      envMapIntensity: 1,
+      side: THREE.BackSide,
     });
 
     const prism = new THREE.Mesh(prismG, inkAndGrain);
+    // prism.position.set(0, 0, -1000);
 
-    // Main Light Rig
-    const spotA = new THREE.SpotLight(0xACACAC, 240, 360, 90, 1, 45);
-    spotA.position.set(0, 0, 30);
+    // Main Lighting Rig
+    const spotA = new THREE.SpotLight(0xFFFFFF, 90, 90, 180, 0, 12);
+    spotA.position.set(0, 0, 60);
+
+    const boxG = new THREE.BoxGeometry(10, 10, 10);
+    const FlatBlack = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const cube = new THREE.Mesh(boxG, FlatBlack);
+    cube.rotation.set(Phaser.Math.DegToRad(45), 0, 0);
 
     this.rootScene.add(
       prism, 
-
-      spotA
+      cube,
+      spotA,
+      // new THREE.PointLight(0xFFFFFF, 1)
     );
+    this.events.on('update', () => prism.rotation.y+=0.01);
 
     const lineArt = new OutlinePass(new THREE.Vector2(this.res.w, this.res.h), this.rootScene, this.camera3D, [prism]);
-    lineArt.edgeThickness = 2;
-    lineArt.edgeStrength = 255;
-    lineArt.visibleEdgeColor = new THREE.Color(1, 1, 1);
+    lineArt.edgeThickness = 1;
+    lineArt.edgeStrength = 16;
+    lineArt.visibleEdgeColor = new THREE.Color(0, 0, 0);
+    lineArt.hiddenEdgeColor = new THREE.Color(1, 1, 1);
 
-    this.events.on('update', () => prism.rotation.y+=0.1);
+    const FXAntiAlias = FXAA;
+    FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(new THREE.Vector2(this.res.w, this.res.h));
+    console.debug(FXAntiAlias.uniforms)
+
     
-    // Post-Processing "stack" - ordering sensitive
+    // TAA Base Pass
     comp.addPass(rootPass);
-    comp.addPass(tx2DPass);
-    comp.addPass(FXAA);
-
+    comp.addPass(FXAntiAlias);
+    
+    // Initial FX
     comp.addPass(lineArt);
-    comp.addPass(halftone); 
-    comp.addPass(shdrPass);
-
     comp.addPass(hazyGlow);
-    comp.addPass(timeHaze);
-    comp.addPass(retroCRT);
 
+    // Final FX
+    comp.addPass(tx2DPass);
+    comp.addPass(retroCRT);
+    comp.addPass(timeHaze);
+
+    // Dynamic FX
     comp.addPass(transGlitch);
+
+    // this.add.circle(0, 0, 60, 0x000000);
 
     // periodically reset the internal clock for the retroCRT shader to mitigating banding;
     setInterval(() => {
       retroCRT.uniforms['time'] = new THREE.Uniform(0);
-    }, 3000);
+    }, 30000);
 
+    this.rootRenderer.compile(this.rootScene, this.camera3D);
     this.events.on('update', () => {
       comp.render();
-      // chromaticAberration.render(this.rootScene, this.camera3D);
     });
   }
 

@@ -16,7 +16,7 @@ const overlayEl = document.getElementsByTagName('overlay')[0] as HTMLDivElement;
 document.addEventListener('DOMContentLoaded', () => {
 
   const phaseUIConfig = {
-    type: Phaser.WEBGL,
+    type: Phaser.CANVAS,
     canvas: phaseCanvas,
     antialias: true,
     antialiasGL: true,
