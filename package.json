@@ -1,7 +1,7 @@
 {
-  "name": "nlucis.github.io",
+  "name": "zon-creativeworks.github.io",
   "version": "0.0.1",
-  "description": "A Body-Doubling AI Companion",
+  "description": "Interactive Artworks, Multimedia & Games",
   "main": "code/index.ts",
   "directories": {
     "src": "code/",
@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nlucis/TiLLI.git"
+    "url": "git+https://github.com/zon-creativeworks/zon-creativeworks.github.io.git"
   },
-  "author": "Arjay Jones <nlucis_creative@proton.me> (nLucis Creative)",
+  "author": "Arjay Jones <nlucis_creative@proton.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nlucis/TiLLI/issues"
+    "url": "https://github.com/zon-creativeworks/zon-creativeworks.github.io"
   },
-  "homepage": "https://github.com/nlucis/TiLLI#readme",
+  "homepage": "https://zon-creativeworks.github.io",
   "devDependencies": {
     "@types/leaflet": "^1.9.0",
     "@types/leaflet-providers": "^1.2.1",

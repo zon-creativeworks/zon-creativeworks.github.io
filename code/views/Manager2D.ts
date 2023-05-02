@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 import * as PIXI from 'pixi.js';
 import * as PUtils from '@pixi/utils';
+import { SVG } from 'leaflet';
 
 export default class Manager2D {
   public isMobile: boolean;
@@ -55,6 +56,28 @@ export default class Manager2D {
   }
 
   setup(): void {
+    const loader = new SVGLoader();
+    loader.load('code/assets/icons/TiLLI.svg', (svgData) => {
+      const paths = svgData.paths;
+      const group = new THREE.Group();
+
+      paths.forEach(path => {
+        const material = new THREE.MeshBasicMaterial({
+          color: path.color,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+
+        const shapes = SVGLoader.createShapes(path);
+
+        shapes.forEach(shape => {
+          const geometry = new THREE.ShapeGeometry(shape);
+          const mesh = new THREE.Mesh(geometry, material);
+          group.add(mesh);
+        });
+      });
+      this.scene.add(group);
+    });
     const target = new OffscreenCanvas(this.res.w, this.res.h);
     const pixi = new PIXI.Application({ 
       width: window.innerWidth, 
@@ -67,6 +90,9 @@ export default class Manager2D {
       resolution: window.devicePixelRatio,
       sharedTicker: true,
     });
+    let svg;
+    PIXI.loadSVG.load && (svg = PIXI.loadSVG.load('code/assets/icons/TiLLI.svg'));
+    
 
 
     this.camera = new THREE.OrthographicCamera(-this.res.w / 2, +this.res.w / 2, -this.res.h / 2, +this.res.h / 2, 1, 100);
