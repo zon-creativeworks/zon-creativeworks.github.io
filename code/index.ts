@@ -1,5 +1,6 @@
 /* DEPENDENCIES */
 import * as Tone from 'tone';
+import Manager2D from './views/Manager2D';
 import Manager3D from './views/Manager3D';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -49,8 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
       fadeInStatic();
     });
 
-  // --- Three.js ---
-  const threeMan = new Manager3D();
+  // --- Three.js | 3D Layers ---
+  const manager3D = new Manager3D();
+  
+  // --- Three.js | UI Layers ---
+  const manager2D = new Manager2D();
+  manager3D.addTexture(manager2D.outTexture);
 });
 
 // TODO: Add DTMF Tone Generator

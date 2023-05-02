@@ -24,10 +24,15 @@ export default class Manager3D {
   private composer: EffectComposer;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera;
-  private scene: THREE.Scene = new THREE.Scene();
-
-  private UI: THREE.CanvasTexture;
+  private scene: THREE.Scene;
   private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
+
+  private textures: THREE.CanvasTexture[] = [];
+  public addTexture(t: THREE.CanvasTexture): void {
+    this.textures.push(t);
+    this.renderer.resetState();
+    this.setup();
+  }
 
   constructor() {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
@@ -41,6 +46,8 @@ export default class Manager3D {
   }
 
   private setup(): void {
+    this.scene = new THREE.Scene();
+    console.debug(this);
 
     const geo = new THREE.IcosahedronGeometry(1.6, 0);
     const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
@@ -58,8 +65,6 @@ export default class Manager3D {
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
     const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
-    const UI2DPass = new TexturePass(this.UI, 0.8);
-    // this.UI.flipY = false;
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -131,7 +136,10 @@ export default class Manager3D {
     this.composer.addPass(FXAntiAlias);
     
     // Initial FX
-    this.composer.addPass(UI2DPass); // TODO: Figure out why this wont render correctly on iOS
+    this.textures.forEach(texture => {
+      const texturePass = new TexturePass(texture, 0.9);
+      this.composer.addPass(texturePass);
+    });
     this.composer.addPass(lineArt);
     this.composer.addPass(hazyGlow);
 
