@@ -2,8 +2,16 @@
 import * as Tone from 'tone';
 import Manager2D from './views/Manager2D';
 import Manager3D from './views/Manager3D';
+import Phaser from 'phaser';
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  new Phaser.Game({
+    type: Phaser.WEBGL,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    canvas: document.getElementById('phase') as HTMLCanvasElement
+  });
 
   // --- Tone.js ---
     const now = Tone.now();
@@ -55,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // --- Three.js | UI Layers ---
   const manager2D = new Manager2D();
-  manager3D.addTexture(manager2D.outTexture);
 });
 
 // TODO: Add DTMF Tone Generator

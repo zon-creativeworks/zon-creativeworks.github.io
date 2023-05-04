@@ -48,14 +48,23 @@ main {
   z-index:4;
 }
 
-#three {
+#phase {
   z-index: 1;
   background-color: transparent;
   pointer-events: none;
   border-radius: 32px;
 }
 
+#three {
+  z-index: 2;
+  background-color: transparent;
+  pointer-events: none;
+  border-radius: 32px;
+}
+
 #bezel {
+  z-index: 3;
+
   top: 0px;
   left: 0px;
   position: absolute;
@@ -65,7 +74,5 @@ main {
   border-radius: 32px;
   box-shadow: 0px 0px 0px 100px black;
   background-color: transparent;
-
-  z-index: 2;
   pointer-events: none !important;
 }

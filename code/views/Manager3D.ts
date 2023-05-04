@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { TexturePass } from 'three/examples/jsm/postprocessing/TexturePass';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { ColorifyShader } from 'three/examples/jsm/shaders/ColorifyShader';
 import { 
   AdaptiveToneMappingPass, 
@@ -16,7 +17,6 @@ import {
   HalftonePass,
   OutlineEffect
 } from '../components/controller/PostProcessing';
-
 
 
 export default class Manager3D {
@@ -47,11 +47,32 @@ export default class Manager3D {
 
   private setup(): void {
     this.scene = new THREE.Scene();
-    console.debug(this);
+    
+    const loader = new GLTFLoader();
+    loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
+      console.debug(meshData);
+    });
 
     const geo = new THREE.IcosahedronGeometry(1.6, 0);
-    const flatWhite = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, reflectivity: 1.0 });
-    const flatBlack = new THREE.MeshBasicMaterial({ color: 0x000000, reflectivity: 0.0 });
+    const flatWhite = new THREE.MeshPhysicalMaterial({ 
+      color: 0xFFFFFF, 
+      reflectivity: 1.0, 
+      emissive: 0xFFFFFF, 
+      emissiveIntensity: 0 
+    });
+    const flatBlack = new THREE.MeshPhysicalMaterial({ 
+      color: 0x000000, 
+      reflectivity: 0.0, 
+      attenuationColor: new THREE.Color(0xFF2525),
+      emissive: 0xFFAC00,
+      emissiveIntensity: 0.09,
+      side: THREE.BackSide,
+      transparent: true,
+      opacity: 0.9
+    });
+    const inner = new THREE.BoxGeometry(1, 1, 1, 4);
+    const cubic = new THREE.Mesh(inner, flatWhite);
+    this.scene.add(cubic);
 
     const ico = new THREE.Mesh(geo, flatBlack);
     this.meshes['ico'] = ico;
@@ -70,7 +91,7 @@ export default class Manager3D {
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
 
     // Aesthetic FX
-    const retroCRT = new FilmPass(0.36, 0.12, 2048, 0);
+    const retroCRT = new FilmPass(0.36, 0.12, 1024, 0);
     const timeHaze = new AfterimagePass(0.36);
 
     // Glitch effect to be triggered during scene transitions
