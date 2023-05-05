@@ -146,11 +146,14 @@ export default class Manager3D {
 
     // --- Sensor and Interaction Synchronization ---
     // acceleration X <==> device motion alpha
-    this.meshes['TorsionIndicator'].rotation.y += 0.1;
+    this.meshes['TorsionIndicator'].rotation.y += 0.01;
     this.meshes['AccelerationX'].rotation.z += 0.1;
     this.meshes['AccelerationY'].rotation.x += 0.1;
     this.meshes['VerticalAcceleration'].rotation.z += 0.1;
-    // this.meshes['AccelerationZeroRing'].rotation.x += 0.1; // <-- should not move
+
+    this.meshes['RotationIndicator'].rotation.y += 0.1;
+    this.meshes['SouthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
+    this.meshes['NorthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
 
     // Whole animation groups can be selected - note: they should all share a common origin point
     this.animationGroups['ControllerRail'].children.forEach(mesh => {
