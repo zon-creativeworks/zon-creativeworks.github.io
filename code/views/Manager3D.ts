@@ -23,7 +23,7 @@ export default class Manager3D {
   public meshes: { [key: string]: THREE.Mesh } = {};
   private composer: EffectComposer;
   private renderer: THREE.WebGLRenderer;
-  private camera: THREE.PerspectiveCamera;
+  private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
   private scene: THREE.Scene;
   private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
 
@@ -36,7 +36,7 @@ export default class Manager3D {
 
   constructor() {
     this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.target, alpha: true, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.target, alpha: false, antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
@@ -48,44 +48,34 @@ export default class Manager3D {
   private setup(): void {
     this.scene = new THREE.Scene();
     
+    // Load mesh data & setup rendering pipeline
     const loader = new GLTFLoader();
     loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
       console.debug(meshData);
-    });
 
-    const geo = new THREE.IcosahedronGeometry(1.6, 0);
-    const flatWhite = new THREE.MeshPhysicalMaterial({ 
-      color: 0xFFFFFF, 
-      reflectivity: 1.0, 
-      emissive: 0xFFFFFF, 
-      emissiveIntensity: 0 
-    });
-    const flatBlack = new THREE.MeshPhysicalMaterial({ 
-      color: 0x000000, 
-      reflectivity: 0.0, 
-      attenuationColor: new THREE.Color(0xFF2525),
-      emissive: 0xFFAC00,
-      emissiveIntensity: 0.09,
-      side: THREE.BackSide,
-      transparent: true,
-      opacity: 0.9
-    });
-    const inner = new THREE.BoxGeometry(1, 1, 1, 4);
-    const cubic = new THREE.Mesh(inner, flatWhite);
-    this.scene.add(cubic);
+      // Extract scene objects
+      meshData.scene.position.set(0, 0, 0);
+      meshData.scene.rotation.set(THREE.MathUtils.degToRad(90), 0, 0);
+      meshData.scene.scale.set(100, 100, 100);
+      this.scene.add(meshData.scene);
 
-    const ico = new THREE.Mesh(geo, flatBlack);
-    this.meshes['ico'] = ico;
+      // Extract Cameras and Lighting
+      this.camera = meshData.cameras[0] as THREE.OrthographicCamera;
+      this.camera.left = -(window.innerWidth / 2) * 0.02;
+      this.camera.right = +(window.innerWidth / 2) * 0.02;
+      this.camera.top = +(window.innerHeight / 2) * 0.02;
+      this.camera.bottom = -(window.innerHeight / 2) * 0.02;
+      this.camera.near = 0.01;
+      this.camera.far = 100;
 
-    ico.position.set(0, 0, -10);
-    this.scene.add(ico);
-    this.camera.lookAt(ico.position);
+      // Adjust for the slight off-centeredness
+      this.camera.position.set(0.1, 0, 0);
 
     // Post-Processing and Shaders
     this.composer = new EffectComposer(this.renderer);
     const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
-    const rootPass = new TAARenderPass(this.scene, this.camera, 0x9A5CBF, 0.36);
+    const rootPass = new TAARenderPass(this.scene, this.camera, 0xFFFFFF, 0.42);
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
@@ -100,57 +90,16 @@ export default class Manager3D {
     transGlitch.curF = 0.00001;
     transGlitch.enabled = false;
 
-    const prismG = new THREE.IcosahedronGeometry(20, 9);
-    const inkAndGrain = new THREE.MeshPhysicalMaterial({
-
-      color: 0xFFAC00,
-      opacity: 1.0,
-      blending: THREE.NormalBlending,
-
-      metalness: 0.0,
-      roughness: 0.3,
-
-      reflectivity: 0.8,
-
-      dithering: true,
-      flatShading: false,
-
-      toneMapped: true,
-      transparent: true,
-      precision: 'highp',
-      
-      side: THREE.BackSide,
-    });
-
-    const prism = new THREE.Mesh(prismG, inkAndGrain);
-    this.meshes['prism'] = prism;
-    prism.position.set(0, 0, -100);
-
-    // Main Lighting Rig
-    const spotA = new THREE.SpotLight(0xFFFFFF, 90, 90, 180, 0, 12);
-    spotA.position.set(0, 0, 60);
-
-    const boxG = new THREE.BoxGeometry(10, 10, 10);
-    const FlatBlack = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const cube = new THREE.Mesh(boxG, FlatBlack);
-    
-    cube.rotation.set(THREE.MathUtils.degToRad(45), 0, 0);
-
-    this.scene.add(
-      prism, 
-      cube,
-      spotA,
-      new THREE.PointLight(0xFFFFFF, 1)
-    );
-
-    const lineArt = new OutlinePass(new THREE.Vector2(vec2res.x, vec2res.y), this.scene, this.camera, [prism]);
-    lineArt.edgeThickness = 1;
-    lineArt.edgeStrength = 16;
-    lineArt.visibleEdgeColor = new THREE.Color(0, 0, 0);
+    const lineArt = new OutlinePass(new THREE.Vector2(vec2res.x, vec2res.y), this.scene, this.camera, [meshData.scene]);
+    lineArt.edgeThickness = 2;
+    lineArt.edgeStrength = 2;
+    lineArt.visibleEdgeColor = new THREE.Color(1, 1, 1);
     lineArt.hiddenEdgeColor = new THREE.Color(1, 1, 1);
 
+    const resolution: THREE.Vector2 = new THREE.Vector2(0.0001, 0.0001);
     const FXAntiAlias = FXAA;
-    FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(new THREE.Vector2(vec2res.x, vec2res.y));
+    FXAntiAlias.setSize(window.innerWidth, window.innerHeight);
+    FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(resolution);
     
     // TAA Base Pass
     this.composer.addPass(rootPass);
@@ -180,12 +129,11 @@ export default class Manager3D {
 
     // Chain to Animate
     this.animate();
+    });
+
   }
 
-  private update(): void {
-    this.meshes['ico'].rotation.y += 0.1;
-    this.meshes['prism'].rotation.y += 0.01;
-  }
+  private update(): void {this.camera.updateProjectionMatrix()}
 
   private animate(): void {
     const doRender = () => {
