@@ -17,13 +17,14 @@ import {
   HalftonePass,
   OutlineEffect
 } from '../components/controller/PostProcessing';
+import Container3D from '../components/interface/base/Container3D';
 
 
 export default class Manager3D {
   public meshes: { [key: string]: THREE.Mesh } = {};
   public animationGroups: { [key: string] : THREE.Group } = {};
 
-  private scene: THREE.Scene;
+  public scene: THREE.Scene;
   private composer: EffectComposer;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
@@ -161,8 +162,10 @@ export default class Manager3D {
     this.meshes['OrientationY'].rotation.y += 0.01;
     this.meshes['OrientationZ'].rotation.y -= 0.01; // Because local axes
 
-    // this.camera.rotation.x += (this.camera.rotation.x < THREE.MathUtils.degToRad(90)) ? 0.01 : 0.0;
-    this.camera.position.z += (this.camera.rotation.x >= THREE.MathUtils.degToRad(90) && this.camera.position.z < 6) ? 0.1 : 0.0;
+    // TODO: These should be tweens
+    this.camera.rotation.y += (this.camera.rotation.y < THREE.MathUtils.degToRad(90)) ? 0.1 : 0.0;
+    this.scene.rotation.z += (this.camera.rotation.y >= THREE.MathUtils.degToRad(90) && this.scene.rotation.z < THREE.MathUtils.degToRad(90)) ? 0.1 : 0.0;
+    this.camera.position.z += (this.scene.rotation.z >= THREE.MathUtils.degToRad(90) && this.camera.position.z < 7) ? 0.3 : 0.0;
 
     // Whole animation groups can be selected - note: they should all share a common origin point
     this.animationGroups['ControllerRail'].children.forEach(mesh => {

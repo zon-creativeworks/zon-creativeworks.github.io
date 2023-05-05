@@ -1,16 +1,28 @@
 /* DEPENDENCIES */
+import Phaser from 'phaser';
 import * as Tone from 'tone';
 import Manager2D from './views/Manager2D';
 import Manager3D from './views/Manager3D';
-import Phaser from 'phaser';
+import MixedMediaView from './components/interface/base/MixedMediaView';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  new Phaser.Game({
+  // Define the different scene Views (MixedMediaView derivatives)
+  const devMMV = new MixedMediaView('Development MMV');
+
+  // Boot up the UI with any initialized MMV scenes
+  const UI = new Phaser.Game({
     type: Phaser.WEBGL,
+    antialias: true,
+    antialiasGL: true,
+    transparent: true,
+    customEnvironment: true,
     width: window.innerWidth,
     height: window.innerHeight,
-    canvas: document.getElementById('phase') as HTMLCanvasElement
+    canvas: document.getElementById('phase') as HTMLCanvasElement,
+    scene: [
+      devMMV
+    ]
   });
 
   // --- Tone.js ---
@@ -57,9 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
       backgroundNoise.start();
       fadeInStatic();
     });
-
-  // --- Three.js | 3D Layers ---
-  const manager3D = new Manager3D();
   
   // --- Three.js | UI Layers ---
   const manager2D = new Manager2D();
