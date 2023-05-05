@@ -92,6 +92,7 @@ export default class MixedMediaView extends Phaser.Scene {
     // Load in the main UI 3D Componentse
     const loader = new GLTFLoader();
     loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
+      console.debug(meshData);
 
       // Orient scene composition to the camera
       meshData.scene.position.set(0, 0, 0);
@@ -175,8 +176,9 @@ export default class MixedMediaView extends Phaser.Scene {
       cursor2D.setY(this.input.activePointer.worldY);
     });
   }
-  create(): void {
 
+
+  create(): void {
     const overlay2D = this.add.graphics()
       .lineStyle(3, 0xFFFFFF)
       .fillStyle(0x000000, 0.12)
@@ -188,25 +190,41 @@ export default class MixedMediaView extends Phaser.Scene {
     const i2D_Foreplate = this.add.circle(0, 0, 32, 0xFFFFFF).setStrokeStyle(3, 0xFFAC00);
     const interactron2D = this.add.container(0, 400, [i2D_Backplate, i2D_Foreplate]);
   }
-
-  override update(): void {this.animate2D();this.animate3D()};
+  override update(): void {this.animate2D(), this.animate3D()};
 
   private animate2D(): void {}
   private animate3D(): void {
+      this.camera3.updateProjectionMatrix();
+    this.camera3.updateWorldMatrix(true, true);
 
     // --- Sensor and Interaction Synchronization ---
-    // acceleration X <==> device motion alpha
-    this.meshes['TorsionIndicator'].rotation.y += 0.01;
-    this.meshes['AccelerationX'].rotation.z -= 0.1;
-    this.meshes['AccelerationY'].rotation.x += 0.1;
-    this.meshes['VerticalAcceleration'].rotation.x += 0.1;
+    // Device Motion Event => Rotation / Angular Acceleration
+    if (this.meshes['TorsionIndicator']) this.meshes['TorsionIndicator'].rotation.y += 0.01;
 
-    this.meshes['RotationIndicator'].rotation.y += 0.1;
-    this.meshes['SouthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
-    this.meshes['NorthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
-    this.meshes['OrientationX'].rotation.x += 0.01;
-    this.meshes['OrientationY'].rotation.y += 0.01;
-    this.meshes['OrientationZ'].rotation.y -= 0.01; // Because local axes
+    // acceleration X <==> device motion alpha
+    if (this.meshes['AccelerationX']) this.meshes['AccelerationX'].rotation.z -= 0.1;
+
+    // acceleration Y <==> device motion beta
+    if (this.meshes['AccelerationY']) this.meshes['AccelerationY'].rotation.x += 0.1;
+
+    // vertical acceleration / acceleration z <==> device motion gamma
+    if (this.meshes['VerticalAcceleration']) this.meshes['VerticalAcceleration'].rotation.x += 0.1;
+
+    // Device orientation relative to gravity
+    if (this.meshes['RotationIndicator']) this.meshes['RotationIndicator'].rotation.y += 0.1;
+
+    // Device magnetometer and/or gyroscope pole alignments
+    if (this.meshes['NorthPole'] && this.meshes['SouthPole']) {
+      this.meshes['SouthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
+      this.meshes['NorthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
+    }
+
+    // Device orientation per axis
+    if (this.meshes['OrientationX'] && this.meshes['OrientationY'] && this.meshes['OrientationZ']) {
+      this.meshes['OrientationX'].rotation.x += 0.01;
+      this.meshes['OrientationY'].rotation.y += 0.01;
+      this.meshes['OrientationZ'].rotation.y -= 0.01; // using y instead of z due to localized reference frame
+    }
 
     // TODO: These should be tweens
     this.camera3.rotation.y += (this.camera3.rotation.y < this.RAD.Deg90) ? 0.1 : 0.0;
@@ -214,12 +232,11 @@ export default class MixedMediaView extends Phaser.Scene {
     this.camera3.position.z += (this.scene3.rotation.z >= THREE.MathUtils.degToRad(90) && this.camera3.position.z < 7) ? 0.3 : 0.0;
 
     // Whole animation groups can be selected - note: they should all share a common origin point
-    this.animationGroups['ControllerRail'].children.forEach(mesh => {
+    if (this.animationGroups['ControllerRail']) this.animationGroups['ControllerRail'].children.forEach(mesh => {
       mesh.rotation.y -= 0.01;
     });
 
-    this.camera3.updateProjectionMatrix();
-    this.camera3.updateWorldMatrix(true, true);
-    this.composer.render();
+    // Once the composer is available, render it's current frame
+    this.composer && this.composer.render();
   }
 }
