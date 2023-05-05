@@ -59,87 +59,74 @@ export default class Manager3D {
     
     // Load mesh data & setup rendering pipeline
     const loader = new GLTFLoader();
-    const entityMeshes: {[key: string]: THREE.Mesh} = {};
     loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
-      console.debug(meshData);
 
-      // Extract scene objects
+      // Orient scene composition to the camera
       meshData.scene.position.set(0, 0, 0);
       meshData.scene.rotation.set(THREE.MathUtils.degToRad(90), 0, 0);
 
       // Extract out child meshes to animate
-      meshData.scene.children.filter(entity => { return entity.type === 'Object3D'}).forEach(object3D => {
-        // object3D.children.forEach(mesh => sceneMeshes.push(mesh as THREE.Mesh));
+      meshData.scene.children.forEach(mesh => {
+        this.meshes[mesh.name] = mesh as THREE.Mesh;
+        console.debug(mesh.name);
       });
 
-      // Map materials and textures if needed
-      
-      // Combine with main scene
+      // Combine the composition with the main scene
       this.scene.add(meshData.scene);
 
       // Setup post-processing and shaders
       this.composer = new EffectComposer(this.renderer);
       const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
+      const rootPass = new TAARenderPass(this.scene, this.camera, 0x8E29DF, 0.3);
 
-    const rootPass = new TAARenderPass(this.scene, this.camera, 0x8E29DF, 0.3);
+      // Aesthetic FX
+      const retroCRT = new FilmPass(0.36, 0.12, 1024, 0);
+      const hazyGlow = new UnrealBloomPass(vec2res, 0.16, 3, 0.3);
 
-    // Bloom & Glow FX
-    const hazyGlow = new UnrealBloomPass(vec2res, 0.16, 3, 0.3);
+      // Glitch effect to be triggered during scene transitions
+      const transGlitch = new GlitchPass(-1);
+      transGlitch.randX = 0.001;
+      transGlitch.curF = 0.00001;
+      transGlitch.enabled = false;
 
-    // Aesthetic FX
-    const retroCRT = new FilmPass(0.36, 0.12, 1024, 0);
-    const timeHaze = new AfterimagePass(0.36);
+      const lineArt = new OutlinePass(new THREE.Vector2(vec2res.x, vec2res.y), this.scene, this.camera, [meshData.scene]);
+      lineArt.edgeThickness = 1;
+      lineArt.edgeStrength = 3;
+      lineArt.visibleEdgeColor = new THREE.Color(1, 1, 1);
+      lineArt.hiddenEdgeColor = new THREE.Color(1, 1, 1);
 
-    // Glitch effect to be triggered during scene transitions
-    const transGlitch = new GlitchPass(-1);
-    transGlitch.randX = 0.001;
-    transGlitch.curF = 0.00001;
-    transGlitch.enabled = false;
-
-    const lineArt = new OutlinePass(new THREE.Vector2(vec2res.x, vec2res.y), this.scene, this.camera, [meshData.scene]);
-    lineArt.edgeThickness = 2;
-    lineArt.edgeStrength = 2;
-    lineArt.visibleEdgeColor = new THREE.Color(1, 1, 1);
-    lineArt.hiddenEdgeColor = new THREE.Color(1, 1, 1);
-
-    const resolution: THREE.Vector2 = new THREE.Vector2(0.0001, 0.0001);
-    const FXAntiAlias = FXAA;
-    FXAntiAlias.setSize(window.innerWidth, window.innerHeight);
-    // FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(resolution);
+      // For tweaking FXAA if needed
+      const resolution: THREE.Vector2 = new THREE.Vector2(0.0001, 0.0001);
     
-    // TAA Base Pass
-    this.composer.addPass(rootPass);
-    this.composer.addPass(FXAntiAlias);
-    
-    // Initial FX
-    this.textures.forEach(texture => {
-      const texturePass = new TexturePass(texture, 0.9);
-      this.composer.addPass(texturePass);
+      // Rendering Stack
+      this.composer.addPass(rootPass);
+      this.composer.addPass(lineArt);
+      this.composer.addPass(hazyGlow);
+      this.composer.addPass(retroCRT);
+      this.composer.addPass(FXAA);
+
+      // Dynamic FX
+      this.composer.addPass(transGlitch);
+
+      // periodically reset the internal clock for the retroCRT shader to mitigating banding;
+      setInterval(() => {
+        retroCRT.uniforms['time'] = new THREE.Uniform(0);
+      }, 30000);
+
+      this.renderer.compile(this.scene, this.camera);
+
+      // Chain to Animate
+      this.animate();
     });
-    this.composer.addPass(lineArt);
-    this.composer.addPass(hazyGlow);
-
-    // Final FX
-    this.composer.addPass(retroCRT);
-    this.composer.addPass(timeHaze);
-
-    // Dynamic FX
-    this.composer.addPass(transGlitch);
-
-    // periodically reset the internal clock for the retroCRT shader to mitigating banding;
-    setInterval(() => {
-      retroCRT.uniforms['time'] = new THREE.Uniform(0);
-    }, 30000);
-
-    this.renderer.compile(this.scene, this.camera);
-
-    // Chain to Animate
-    this.animate();
-    });
-
   }
 
-  private update(): void {this.camera.updateProjectionMatrix()}
+  private update(): void {
+    this.camera.updateProjectionMatrix();
+
+    // --- Sensor and Interaction Synchronization ---
+    // acceleration X <==> device motion alpha
+    this.meshes['AccelerationX'].position.x += 0;
+  }
 
   private animate(): void {
     const doRender = () => {
