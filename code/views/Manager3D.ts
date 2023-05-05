@@ -57,6 +57,11 @@ export default class Manager3D {
       meshData.scene.position.set(0, 0, 0);
       meshData.scene.rotation.set(THREE.MathUtils.degToRad(90), 0, 0);
       meshData.scene.scale.set(100, 100, 100);
+
+      // Extract out each sub-object
+      meshData.scene.children.filter(entity => { return entity.type === 'Object3D'}).forEach(object3D => {
+        console.debug(object3D.children);
+      });
       this.scene.add(meshData.scene);
 
       // Extract Cameras and Lighting
@@ -71,11 +76,11 @@ export default class Manager3D {
       // Adjust for the slight off-centeredness
       this.camera.position.set(0.1, 0, 0);
 
-    // Post-Processing and Shaders
-    this.composer = new EffectComposer(this.renderer);
-    const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
+      // Setup post-processing and shaders
+      this.composer = new EffectComposer(this.renderer);
+      const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
-    const rootPass = new TAARenderPass(this.scene, this.camera, 0xFFFFFF, 0.42);
+    const rootPass = new TAARenderPass(this.scene, this.camera, 0xFEBC6C, 0.45);
 
     // Bloom & Glow FX
     const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
