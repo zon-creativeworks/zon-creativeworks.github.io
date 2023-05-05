@@ -14,7 +14,7 @@ body {
   flex-direction: column;
   margin: 0px !important;
   padding: 0px !important;
-  /* cursor: none; */
+  cursor: none;
   width: 100svw;
   height: 100svh;
   background-color: black;
@@ -51,7 +51,7 @@ main {
 #phase {
   z-index: 2;
   background-color: transparent;
-  pointer-events: none;
+  pointer-events: all;
   border-radius: 32px;
 }
 

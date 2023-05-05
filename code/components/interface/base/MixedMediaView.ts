@@ -26,6 +26,13 @@ export default class MixedMediaView extends Phaser.Scene {
   init(): void {
     console.debug(`--- ${this.viewName} Loaded ---`);
     this.cameras.main.centerOn(0, 0);
+
+    // Cursor Overlay
+    const cursor2D = this.add.circle(0, 300, 6, 0xFF0000).setStrokeStyle(3, 0xFFFFFF).setDepth(1e9);
+    this.events.on('update', () => {
+      cursor2D.setX(this.input.activePointer.worldX);
+      cursor2D.setY(this.input.activePointer.worldY);
+    });
   }
   create(): void {
     // --- Three.js | 3D Layers ---
@@ -42,7 +49,6 @@ export default class MixedMediaView extends Phaser.Scene {
     const i2D_Backplate = this.add.circle(0, 0, 45, 0x000000).setStrokeStyle(3, 0xFFFFFF);
     const i2D_Foreplate = this.add.circle(0, 0, 32, 0xFFFFFF).setStrokeStyle(3, 0xFFAC00);
     const interactron2D = this.add.container(0, 400, [i2D_Backplate, i2D_Foreplate]);
-
 
     // 2D Overlay Elements (rendered on top of the Three.js canvas instead of within it)
     const can3D = new Container3D(0, 0, this);
