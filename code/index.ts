@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import * as Tone from 'tone';
 import Manager2D from './views/Manager2D';
 import MixedMediaView from './components/interface/base/MixedMediaView';
+import FirstContact from './views/FirstContact';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     height: window.innerHeight,
     canvas: document.getElementById('phase') as HTMLCanvasElement,
     scene: [
+      FirstContact,
       MixedMediaView
     ]
   });
