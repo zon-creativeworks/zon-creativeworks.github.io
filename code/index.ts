@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     antialiasGL: true,
     transparent: true,
     customEnvironment: true,
+    disableContextMenu: true,
     width: window.innerWidth,
     height: window.innerHeight,
     canvas: document.getElementById('phase') as HTMLCanvasElement,

@@ -1,30 +1,28 @@
 import * as THREE from "three";
-import Container3D from "./Container3D";
-import Manager3D from "../../../views/Manager3D";
+import Manager3D from '../../../views/Manager3D';
 
 
 // A specialized Phaser Scene that contains its own Three.js renderer, composer, scene, and camera
 // However, since all derivatives of this class will target the same canvas, these scenes should be run instead of launched
 // In the process of removing or suspending a given MMV scene, the renderer targeting the canvas should be stopped to avoid race conditions
 export default class MixedMediaView extends Phaser.Scene {
-  private scene3D: THREE.Scene;
-  private viewName: string = 'MixedMediaView';
-
-  constructor(viewName?: string) {
-    super(viewName || 'MixedMediaView');
-    viewName && (this.viewName = viewName);
+  private vName: string = '';
+  constructor() {
+    const viewName = 'MixedMediaView';
+    super(viewName);
+    this.vName = viewName;
     
     const loadedScene: string | undefined = window['ActiveScene'];
 
     // if a different MMV is already defined, unload that scene prior to starting this one
-    if (loadedScene && loadedScene !== this.viewName) this.game.scene.remove(loadedScene);
+    if (loadedScene && loadedScene !== viewName) this.game.scene.remove(loadedScene);
 
     // Assign this MMV view name name to the window; 
-    window['ActiveScene'] = viewName || 'MixedMediaView';
+    window['ActiveScene'] = viewName;
   }
 
   init(): void {
-    console.debug(`--- ${this.viewName} Loaded ---`);
+    console.debug(`--- ${this.vName} Loaded ---`);
     this.cameras.main.centerOn(0, 0);
 
     // Cursor Overlay
@@ -35,9 +33,6 @@ export default class MixedMediaView extends Phaser.Scene {
     });
   }
   create(): void {
-    // --- Three.js | 3D Layers ---
-    const manager3D = new Manager3D(); // TODO: Refactor to have this integrated with MMV scenes instead of instatiated within them
-    this.scene3D = manager3D.scene;    // TODO: See above
 
     const overlay2D = this.add.graphics()
       .lineStyle(3, 0xFFFFFF)
@@ -52,6 +47,9 @@ export default class MixedMediaView extends Phaser.Scene {
 
     // 2D Overlay Elements (rendered on top of the Three.js canvas instead of within it)
     const can3D = new Container3D(0, 0, this);
+
+    // --- Three.js | 3D Layers ---
+    const manager3D = new Manager3D(); // TODO: Refactor to have this integrated with MMV scenes instead of instatiated within them
   }
   update(): void {}
 }

@@ -140,6 +140,8 @@ export default class Manager3D {
       this.animationGroups['AccelerationIndicator'] = accelerationIndicator;
       this.animationGroups['ControllerRail'] = controllerRail;
 
+      // After the main scene is loaded, check for subscenes to insert, and add them
+
       // Chain to Animate
       this.animate();
     });
