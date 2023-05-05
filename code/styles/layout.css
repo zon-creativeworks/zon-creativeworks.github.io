@@ -5,24 +5,22 @@
 
 html {
   background-color: black;
+  margin: 0px;
+  padding: 0px;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  margin: 0px;
-  padding: 0px;
-  cursor: none;
+  margin: 0px !important;
+  padding: 0px !important;
+  /* cursor: none; */
   width: 100svw;
   height: 100svh;
   background-color: black;
 }
 
 canvas {
-  top: 0px;
-  left: 0px;
-  width: 100svw;
-  height: 100svh;
   display: block;
   position: absolute;
 }
@@ -30,9 +28,9 @@ canvas {
 main {
   top: 0px;
   left: 0px;
-  position: absolute;
   width: 100svw;
   height: 100svh;
+  position: absolute;
 }
 
 #copyright-notice {
@@ -50,58 +48,23 @@ main {
   z-index:4;
 }
 
-overlay {
-  background-color: black;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100vw;
-  height: 100vh;
-  z-index: 4;
-  opacity: 1;
-  cursor: pointer;
-}
-overlay > span {
-  display: block;
-  color: rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  font-size: 24pt;
-  font-weight: bold;
-  text-align: center;
-  margin-top: calc(30vh + 36pt);
-  text-shadow: #FFEC42 0px 0px 6px;
-  overflow: hidden;
-  font-family: 'Oswald', sans-serif;
-} 
-
-#typograph {
-  position: absolute;
-  top: 12px;
-  right: 42px;
-  width: 222px;
-  opacity: 0.12;
-  margin-top: 0;
-  font-size: 144pt;
-  color: rgba(255, 255, 255, 0.6);
-  text-shadow: rgba(20, 160, 255, 1) 0px 0px 12px;
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
 #phase {
-  z-index: 2;
-  opacity: 0 !important;
+  z-index: 1;
   background-color: transparent;
-  pointer-events: all;
+  pointer-events: none;
   border-radius: 32px;
 }
 
 #three {
-  z-index: 1;
+  z-index: 2;
   background-color: transparent;
-  pointer-events: none !important;
+  pointer-events: none;
   border-radius: 32px;
 }
+
 #bezel {
+  z-index: 3;
+
   top: 0px;
   left: 0px;
   position: absolute;
@@ -111,7 +74,5 @@ overlay > span {
   border-radius: 32px;
   box-shadow: 0px 0px 0px 100px black;
   background-color: transparent;
-
-  z-index: 3;
   pointer-events: none !important;
 }

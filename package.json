@@ -1,7 +1,7 @@
 {
-  "name": "nlucis.github.io",
+  "name": "zon-creativeworks.github.io",
   "version": "0.0.1",
-  "description": "A Body-Doubling AI Companion",
+  "description": "Interactive Artworks, Multimedia & Games",
   "main": "code/index.ts",
   "directories": {
     "src": "code/",
@@ -23,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nlucis/TiLLI.git"
+    "url": "git+https://github.com/zon-creativeworks/zon-creativeworks.github.io.git"
   },
-  "author": "Arjay Jones <nlucis_creative@proton.me> (nLucis Creative)",
+  "author": "Arjay Jones <nlucis_creative@proton.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nlucis/TiLLI/issues"
+    "url": "https://github.com/zon-creativeworks/zon-creativeworks.github.io"
   },
-  "homepage": "https://github.com/nlucis/TiLLI#readme",
+  "homepage": "https://zon-creativeworks.github.io",
   "devDependencies": {
     "@types/leaflet": "^1.9.0",
     "@types/leaflet-providers": "^1.2.1",
@@ -40,6 +40,7 @@
     "workbox-precaching": "^6.5.4"
   },
   "dependencies": {
+    "@pixi/utils": "^7.2.4",
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-terser": "^0.4.0",
     "@types/node": "^18.13.0",
@@ -47,6 +48,7 @@
     "leaflet": "^1.9.2",
     "leaflet-providers": "^1.13.0",
     "phaser": "^3.55.2",
+    "pixi.js": "^7.2.4",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
     "stripe": "^10.15.0",
