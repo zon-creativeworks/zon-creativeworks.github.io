@@ -81,10 +81,10 @@ export default class Manager3D {
       this.composer = new EffectComposer(this.renderer);
       const vec2res = new THREE.Vector2(window.innerWidth, window.innerHeight); /* for passes that require a vec2 resolution */
 
-    const rootPass = new TAARenderPass(this.scene, this.camera, 0xFEBC6C, 0.45);
+    const rootPass = new TAARenderPass(this.scene, this.camera, 0x8E29DF, 0.3);
 
     // Bloom & Glow FX
-    const hazyGlow = new UnrealBloomPass(vec2res, 0.36, 0.09, 0.09);
+    const hazyGlow = new UnrealBloomPass(vec2res, 0.16, 3, 0.3);
 
     // Aesthetic FX
     const retroCRT = new FilmPass(0.36, 0.12, 1024, 0);
@@ -105,7 +105,7 @@ export default class Manager3D {
     const resolution: THREE.Vector2 = new THREE.Vector2(0.0001, 0.0001);
     const FXAntiAlias = FXAA;
     FXAntiAlias.setSize(window.innerWidth, window.innerHeight);
-    FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(resolution);
+    // FXAntiAlias.uniforms['resolution'] = new THREE.Uniform(resolution);
     
     // TAA Base Pass
     this.composer.addPass(rootPass);
