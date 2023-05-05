@@ -21,10 +21,12 @@ import {
 
 export default class Manager3D {
   public meshes: { [key: string]: THREE.Mesh } = {};
+  public animationGroups: { [key: string] : THREE.Group } = {};
+
+  private scene: THREE.Scene;
   private composer: EffectComposer;
   private renderer: THREE.WebGLRenderer;
   private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera;
-  private scene: THREE.Scene;
   private target: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
 
   private textures: THREE.CanvasTexture[] = [];
@@ -115,6 +117,25 @@ export default class Manager3D {
 
       this.renderer.compile(this.scene, this.camera);
 
+      // Setup mesh groups
+      const accelerationIndicator = new THREE.Group();
+      accelerationIndicator.children.push(
+        this.meshes['TorsionIndicator'],
+        this.meshes['AccelerationX'],
+        this.meshes['AccelerationY'],
+        this.meshes['VerticalAcceleration']
+      );
+      
+      const controllerRail = new THREE.Group();
+      controllerRail.children.push(
+        this.meshes['ControlRail'],
+        this.meshes['RailAlphaPoint'],
+        this.meshes['RailOmegaPoint'],
+      );
+
+      this.animationGroups['AccelerationIndicator'] = accelerationIndicator;
+      this.animationGroups['ControllerRail'] = controllerRail;
+
       // Chain to Animate
       this.animate();
     });
@@ -130,6 +151,11 @@ export default class Manager3D {
     this.meshes['AccelerationY'].rotation.x += 0.1;
     this.meshes['VerticalAcceleration'].rotation.z += 0.1;
     // this.meshes['AccelerationZeroRing'].rotation.x += 0.1; // <-- should not move
+
+    // Whole animation groups can be selected - note: they should all share a common origin point
+    this.animationGroups['ControllerRail'].children.forEach(mesh => {
+      mesh.rotation.y -= 0.01;
+    });
   }
 
   private animate(): void {
