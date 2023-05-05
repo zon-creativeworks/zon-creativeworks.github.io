@@ -16,7 +16,7 @@
     "dev": "vite --host --https && tslint --exclude ./node_modules",
     "test": "jasmine",
     "host": "vercel dev",
-    "build": "vite build && pnpm pwa",
+    "build": "vite build && cp -r ./code/assets/audio ./public/audio && pnpm pwa",
     "serve": "vite preview --host --https",
     "transpile": "cd ./scripts && rm -rf && tsc",
     "pre-deploy": "vite build && pnpm pwa && vite preview --host"

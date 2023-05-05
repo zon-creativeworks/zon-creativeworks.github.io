@@ -47,6 +47,9 @@ export default class Manager3D {
       1000
     );
 
+    const R_90 = THREE.MathUtils.degToRad(90);
+    this.camera.rotation.set(0, 0, R_90);
+
     this.renderer = new THREE.WebGLRenderer({ canvas: this.target, alpha: false, antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
