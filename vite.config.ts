@@ -19,7 +19,7 @@ export default defineConfig({
       'code': path.resolve(__dirname, './code')
     }
   },
-
+  
   build: {
     manifest: true,
     outDir: "public",

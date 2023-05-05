@@ -57,7 +57,7 @@ export default class Manager2D {
 
   setup(): void {
     const loader = new SVGLoader();
-    loader.load('code/assets/icons/TiLLI.svg', (svgData) => {
+    loader.load('public/assets/icons/TiLLI.svg', (svgData) => {
       const paths = svgData.paths;
       const group = new THREE.Group();
 
@@ -91,7 +91,7 @@ export default class Manager2D {
       sharedTicker: true,
     });
     let svg;
-    PIXI.loadSVG.load && (svg = PIXI.loadSVG.load('code/assets/icons/TiLLI.svg'));
+    PIXI.loadSVG.load && (svg = PIXI.loadSVG.load('public/assets/icons/TiLLI.svg'));
     
 
 
