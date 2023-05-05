@@ -125,7 +125,11 @@ export default class Manager3D {
 
     // --- Sensor and Interaction Synchronization ---
     // acceleration X <==> device motion alpha
-    this.meshes['AccelerationX'].position.x += 0;
+    this.meshes['TorsionIndicator'].rotation.y += 0.1;
+    this.meshes['AccelerationX'].rotation.z += 0.1;
+    this.meshes['AccelerationY'].rotation.x += 0.1;
+    this.meshes['VerticalAcceleration'].rotation.z += 0.1;
+    // this.meshes['AccelerationZeroRing'].rotation.x += 0.1; // <-- should not move
   }
 
   private animate(): void {
