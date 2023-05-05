@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3000,
     cors: true,
     fs: {
-      allow: ["code/", "public/", "./"]
+      allow: ["code/", "public/", "./"],
     }
   },
   

@@ -100,7 +100,7 @@ export default class MixedMediaView extends Phaser.Scene {
 
     // Load in the main UI 3D Componentse
     const loader = new GLTFLoader();
-    loader.load('@public/assets/models/MandorlaUI.gltf', (meshData) => {
+    loader.load('assets/models/MandorlaUI.gltf', (meshData) => {
 
       // Orient scene composition to the camera
       meshData.scene.position.set(0, 0, 0);
