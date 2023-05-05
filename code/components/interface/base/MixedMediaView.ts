@@ -27,6 +27,7 @@ export default class MixedMediaView extends Phaser.Scene {
   // Props | Private | 2D
   private vName: string = '';
   private camera2: Phaser.Cameras.Scene2D.Camera;
+  private overlay: Phaser.GameObjects.Graphics;
 
   // Props | Private | 3D
   private composer: EffectComposer;
@@ -35,6 +36,8 @@ export default class MixedMediaView extends Phaser.Scene {
   private target3: HTMLCanvasElement = document.getElementById('three') as HTMLCanvasElement;
 
   // Props | Public | 2D
+  public cursor: Phaser.GameObjects.Container;
+  public interactron2D: Phaser.GameObjects.Container;
 
   // Props | Public | 3D
   public scene3: THREE.Scene;
@@ -45,8 +48,6 @@ export default class MixedMediaView extends Phaser.Scene {
   public RAD = {
     Deg90: THREE.MathUtils.degToRad(90),
   };
-
-
 
   constructor() {
     const viewName = 'MixedMediaView';
@@ -68,6 +69,12 @@ export default class MixedMediaView extends Phaser.Scene {
     this.cameras.main.centerOn(0, 0);
     this.camera2 = this.cameras.main;
 
+    // Overlay cursor
+    const cursorCore = this.add.circle(0, 0, 6, 0xFF0000).setStrokeStyle(3, 0xFFFFFF).setDepth(1e9);
+    this.cursor = this.add.container(0, 0, [
+      cursorCore
+    ]);
+
     // Init | 3D
     // Camera3
     this.camera3 = new THREE.OrthographicCamera(
@@ -86,13 +93,12 @@ export default class MixedMediaView extends Phaser.Scene {
     this.render3D.toneMapping = THREE.ACESFilmicToneMapping;
     this.render3D.toneMappingExposure = 1.0;
 
-    // 3D Scene (Paralog to this scene)
+    // 3D Scene (Paralog to this phaser scene)
     this.scene3 = new THREE.Scene();
 
     // Load in the main UI 3D Componentse
     const loader = new GLTFLoader();
     loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
-      console.debug(meshData);
 
       // Orient scene composition to the camera
       meshData.scene.position.set(0, 0, 0);
@@ -101,7 +107,6 @@ export default class MixedMediaView extends Phaser.Scene {
       // Extract out child meshes to animate
       meshData.scene.children.forEach(mesh => {
         this.meshes[mesh.name] = mesh as THREE.Mesh;
-        console.debug(mesh.name);
       });
 
       // Combine the composition with the main scene
@@ -168,18 +173,10 @@ export default class MixedMediaView extends Phaser.Scene {
       this.animationGroups['AccelerationIndicator'] = accelerationIndicator;
       this.animationGroups['ControllerRail'] = controllerRail;
     });
-
-    // Cursor Overlay
-    const cursor2D = this.add.circle(0, 300, 6, 0xFF0000).setStrokeStyle(3, 0xFFFFFF).setDepth(1e9);
-    this.events.on('update', () => {
-      cursor2D.setX(this.input.activePointer.worldX);
-      cursor2D.setY(this.input.activePointer.worldY);
-    });
   }
 
-
   create(): void {
-    const overlay2D = this.add.graphics()
+    this.overlay = this.add.graphics()
       .lineStyle(3, 0xFFFFFF)
       .fillStyle(0x000000, 0.12)
       .fillRoundedRect(-(window.innerWidth / 2) + 60, -460, window.innerWidth - 108, 800)
@@ -188,11 +185,16 @@ export default class MixedMediaView extends Phaser.Scene {
 
     const i2D_Backplate = this.add.circle(0, 0, 45, 0x000000).setStrokeStyle(3, 0xFFFFFF);
     const i2D_Foreplate = this.add.circle(0, 0, 32, 0xFFFFFF).setStrokeStyle(3, 0xFFAC00);
-    const interactron2D = this.add.container(0, 400, [i2D_Backplate, i2D_Foreplate]);
+    this.interactron2D = this.add.container(0, 400, [i2D_Backplate, i2D_Foreplate]);
   }
+
   override update(): void {this.animate2D(), this.animate3D()};
 
-  private animate2D(): void {}
+  private animate2D(): void {
+    this.cursor.setX(this.input.activePointer.worldX);
+    this.cursor.setY(this.input.activePointer.worldY);
+  }
+
   private animate3D(): void {
       this.camera3.updateProjectionMatrix();
     this.camera3.updateWorldMatrix(true, true);
