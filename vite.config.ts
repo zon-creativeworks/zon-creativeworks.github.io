@@ -16,7 +16,8 @@ export default defineConfig({
   root: "./",
   resolve: {
     alias: {
-      'code': path.resolve(__dirname, './code')
+      'code': path.resolve(__dirname, './code'),
+      '@public': '/'
     }
   },
   
