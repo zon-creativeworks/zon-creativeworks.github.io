@@ -1,4 +1,5 @@
 [![wakatime](https://wakatime.com/badge/user/847256d0-9c16-4db9-bd06-ec78d4f5c068/project/bc4ecb65-d131-4d64-8cc6-1db1cc126f68.svg)](https://wakatime.com/badge/user/847256d0-9c16-4db9-bd06-ec78d4f5c068/project/bc4ecb65-d131-4d64-8cc6-1db1cc126f68)
+![Page Deployment](https://github.com/zon-creativeworks/zon-creativeworks.github.io/actions/workflows/static.yml/badge.svg?branch=build)
 
 ---
 # _TiLLI - Talking Large-Language Interface_
