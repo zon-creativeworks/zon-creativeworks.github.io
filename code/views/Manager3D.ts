@@ -35,7 +35,16 @@ export default class Manager3D {
   }
 
   constructor() {
-    this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
+    // this.camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 1e-4, 1e4);
+    this.camera = new THREE.OrthographicCamera(
+      -(window.innerWidth / 2) * 0.02,
+      +(window.innerWidth / 2) * 0.02,
+      +(window.innerHeight / 2) * 0.02,
+      -(window.innerHeight / 2) * 0.02,
+      0.01,
+      1000
+    );
+
     this.renderer = new THREE.WebGLRenderer({ canvas: this.target, alpha: false, antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -50,31 +59,23 @@ export default class Manager3D {
     
     // Load mesh data & setup rendering pipeline
     const loader = new GLTFLoader();
+    const entityMeshes: {[key: string]: THREE.Mesh} = {};
     loader.load('code/assets/models/MandorlaUI.gltf', (meshData) => {
       console.debug(meshData);
 
       // Extract scene objects
       meshData.scene.position.set(0, 0, 0);
       meshData.scene.rotation.set(THREE.MathUtils.degToRad(90), 0, 0);
-      meshData.scene.scale.set(100, 100, 100);
 
-      // Extract out each sub-object
+      // Extract out child meshes to animate
       meshData.scene.children.filter(entity => { return entity.type === 'Object3D'}).forEach(object3D => {
-        console.debug(object3D.children);
+        // object3D.children.forEach(mesh => sceneMeshes.push(mesh as THREE.Mesh));
       });
+
+      // Map materials and textures if needed
+      
+      // Combine with main scene
       this.scene.add(meshData.scene);
-
-      // Extract Cameras and Lighting
-      this.camera = meshData.cameras[0] as THREE.OrthographicCamera;
-      this.camera.left = -(window.innerWidth / 2) * 0.02;
-      this.camera.right = +(window.innerWidth / 2) * 0.02;
-      this.camera.top = +(window.innerHeight / 2) * 0.02;
-      this.camera.bottom = -(window.innerHeight / 2) * 0.02;
-      this.camera.near = 0.01;
-      this.camera.far = 100;
-
-      // Adjust for the slight off-centeredness
-      this.camera.position.set(0.1, 0, 0);
 
       // Setup post-processing and shaders
       this.composer = new EffectComposer(this.renderer);
