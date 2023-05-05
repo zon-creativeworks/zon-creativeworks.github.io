@@ -154,8 +154,12 @@ export default class Manager3D {
     this.meshes['RotationIndicator'].rotation.y += 0.1;
     this.meshes['SouthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
     this.meshes['NorthPole'].rotation.z = this.meshes['RotationIndicator'].rotation.y;
+    this.meshes['OrientationX'].rotation.x += 0.01;
+    this.meshes['OrientationY'].rotation.y += 0.01;
+    this.meshes['OrientationZ'].rotation.y -= 0.01; // Because local axes
 
     this.camera.rotation.x += (this.camera.rotation.x < THREE.MathUtils.degToRad(90)) ? 0.01 : 0.0;
+    this.camera.position.z += (this.camera.rotation.x >= THREE.MathUtils.degToRad(90) && this.camera.position.z < 6) ? 0.1 : 0.0;
 
     // Whole animation groups can be selected - note: they should all share a common origin point
     this.animationGroups['ControllerRail'].children.forEach(mesh => {
