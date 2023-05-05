@@ -17,6 +17,8 @@ import {
   HalftonePass,
   OutlineEffect
 } from '../../../components/controller/PostProcessing';
+import Holoform from './Holoform';
+import DevHoloform from '../module/DevHoloform';
 
 
 // A specialized Phaser Scene that contains its own Three.js renderer, composer, scene, and camera
@@ -173,6 +175,11 @@ export default class MixedMediaView extends Phaser.Scene {
       this.animationGroups['AccelerationIndicator'] = accelerationIndicator;
       this.animationGroups['ControllerRail'] = controllerRail;
     });
+
+    // Dev Holoform
+    const devHoloform = new DevHoloform(0, 0, this);
+
+    // TODO: Convert everything from the imported scene into a Holoform
   }
 
   create(): void {

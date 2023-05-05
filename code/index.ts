@@ -2,13 +2,9 @@
 import Phaser from 'phaser';
 import * as Tone from 'tone';
 import Manager2D from './views/Manager2D';
-import Manager3D from './views/Manager3D';
 import MixedMediaView from './components/interface/base/MixedMediaView';
 
 document.addEventListener('DOMContentLoaded', () => {
-
-  // Define the different scene Views (MixedMediaView derivatives)
-  const devMMV = new MixedMediaView('Development MMV');
 
   // Boot up the UI with any initialized MMV scenes
   const UI = new Phaser.Game({
@@ -22,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     height: window.innerHeight,
     canvas: document.getElementById('phase') as HTMLCanvasElement,
     scene: [
-      devMMV
+      MixedMediaView
     ]
   });
 
