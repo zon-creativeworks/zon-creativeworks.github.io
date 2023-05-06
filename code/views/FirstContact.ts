@@ -54,14 +54,15 @@ export default class FirstContact extends Phaser.Scene {
   create(): void {
     // Animated cursor
     const cursorCore = this.add.circle(0, 0, 6, 0x000000, 0.64);
-    const crLeftArc = this.add.arc();
-    const crRghtArc = this.add.arc();
+    const crLeftArc = this.add.arc(-3, 0, 12, -90, +90, true).setStrokeStyle(3, 0x000000, 0.72).setClosePath(false);
+    const crRghtArc = this.add.arc(+3, 0, 12, -90, +90, false).setStrokeStyle(3, 0x000000, 0.72).setClosePath(false);
     const cursorRing = this.add.container(0, 0, [crLeftArc, crRghtArc]);
     const cursorPips = this.add.container(0, 0);
-    new Phaser.Geom.Circle(0, 0, 12).getPoints(3).forEach(point => {
+    new Phaser.Geom.Circle(0, 0, 16).getPoints(3).forEach(point => {
       cursorPips.add(this.add.circle(point.x, point.y, 2, 0xFFFFFF, 1));
     });
     this.events.on('update', () => cursorPips.angle++);
+    cursorRing.setScale(0.6, 0.6);
     this.cursor = this.add.container(0, 0, [cursorCore, cursorPips, cursorRing]);
 
     // Psuedo-page Link Buttons
