@@ -12,6 +12,7 @@ export default class FirstContact extends Phaser.Scene {
     inset: 36,
   };
   public cursor: Phaser.GameObjects.Container;
+  public AlignZones: { [key: string]: Phaser.GameObjects.Zone } = {};
 
   /* --- INIT | ]:[ --- */
   private camera: Phaser.Cameras.Scene2D.Camera;
