@@ -32,6 +32,8 @@ export default class FirstContact extends Phaser.Scene {
 
     // Setup positioning columns and regions
     const renderRegion = this.add.zone(0, 0, this.res.w - (this.res.inset * 5), this.res.h - (this.res.inset * 5));
+
+    // Needs two separate columns; top and bottom - 2 buttons each
     const buttonsColumn = this.add.zone((this.res.r - this.res.inset) - (36 / 2), 0, 64, this.res.h - (this.res.inset * 2));
 
     this.AlignZones['RenderRegion'] = renderRegion;
