@@ -32,12 +32,20 @@ export default class FirstContact extends Phaser.Scene {
 
     // Setup positioning columns and regions
     const renderRegion = this.add.zone(0, 0, this.res.w - (this.res.inset * 5), this.res.h - (this.res.inset * 5));
-    const renderRegionVisualizer = this.add.rectangle(renderRegion.x, renderRegion.y, renderRegion.width, renderRegion.height, 0x000000, 0.24);
     const buttonsColumn = this.add.zone((this.res.r - this.res.inset) - (36 / 2), 0, 64, this.res.h - (this.res.inset * 2));
-    const columnVisualizer = this.add.rectangle(buttonsColumn.x, buttonsColumn.y, buttonsColumn.width, buttonsColumn.height, 0xAC0000, 0.36);
     const dot = this.add.circle(0, 0, 12, 0x000000, 0.72);
 
     Phaser.Display.Align.In.Center(dot, buttonsColumn);
+
+    this.AlignZones['RenderRegion'] = renderRegion;
+    this.AlignZones['ButtonsColumn'] = buttonsColumn;
+
+    // Visualize zones for debugging | dont put this into production
+    const showZones = false;
+    Object.keys(this.AlignZones).forEach(k => {
+      const zone = this.AlignZones[k];
+      this.add.rectangle(zone.x, zone.y, zone.width, zone.height, 0x000000, showZones ? 0.24 : 0.00);
+    });
   }
   /* --- INIT | [:] --- */
   
