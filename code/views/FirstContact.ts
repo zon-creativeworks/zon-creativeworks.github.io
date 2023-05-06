@@ -52,6 +52,17 @@ export default class FirstContact extends Phaser.Scene {
   preload(): void {}
   
   create(): void {
+    // Animated cursor
+    const cursorCore = this.add.circle(0, 0, 6, 0x000000, 0.64);
+    const crLeftArc = this.add.arc();
+    const crRghtArc = this.add.arc();
+    const cursorRing = this.add.container(0, 0, [crLeftArc, crRghtArc]);
+    const cursorPips = this.add.container(0, 0);
+    new Phaser.Geom.Circle(0, 0, 12).getPoints(3).forEach(point => {
+      cursorPips.add(this.add.circle(point.x, point.y, 2, 0xFFFFFF, 1));
+    });
+    this.events.on('update', () => cursorPips.angle++);
+    this.cursor = this.add.container(0, 0, [cursorCore, cursorPips, cursorRing]);
 
     // Psuedo-page Link Buttons
     const accountBtn = this.add.circle();
@@ -64,9 +75,9 @@ export default class FirstContact extends Phaser.Scene {
     // A visitor "plucks" them like a guitar string, or can pull them down like stage curtain ropes
   }
   
-  preUpdate(): void {}
-  
-  update(): void {}
+  update(): void {
+    this.cursor.setPosition(this.input.activePointer.worldX, this.input.activePointer.worldY);
+  }
   
   postUpdate(): void {}
 }
