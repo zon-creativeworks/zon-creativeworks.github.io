@@ -5,7 +5,11 @@ export default class FirstContact extends Phaser.Scene {
   public res = {
     w: window.innerWidth,
     h: window.innerHeight,
-    inset: 36
+    r: +(window.innerWidth / 2),
+    l: -(window.innerWidth / 2),
+    t: +(window.innerHeight / 2),
+    b: -(window.innerHeight / 2),
+    inset: 36,
   };
   public cursor: Phaser.GameObjects.Container;
 
@@ -24,8 +28,8 @@ export default class FirstContact extends Phaser.Scene {
     copy.style.opacity = '1';
 
     // Setup positioning column for buttons on right-hand edge
-    this.add.circle(this.res.w / 2 - this.res.inset, 0, 12, 0xFFFFFF, 0.72);
-    this.add.rectangle(this.res.w / 2 - this.res.inset);
+    this.add.circle(this.res.r - this.res.inset, 0, 12, 0xFFFFFF, 0.72);
+    this.add.rectangle(this.res.r - this.res.inset);
   }
   /* --- INIT | [:] --- */
   
@@ -38,6 +42,10 @@ export default class FirstContact extends Phaser.Scene {
     const contactBtn = this.add.circle();
     const exploreBtn = this.add.circle();
     const shoppesBtn = this.add.circle();
+
+    // Button Physics Bodies
+    // Each button is placed into a MatterJS world and are connected by spline constraint chains so that rather than clicking them
+    // A visitor "plucks" them like a guitar string, or can pull them down like stage curtain ropes
   }
   
   preUpdate(): void {}
