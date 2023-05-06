@@ -33,9 +33,6 @@ export default class FirstContact extends Phaser.Scene {
     // Setup positioning columns and regions
     const renderRegion = this.add.zone(0, 0, this.res.w - (this.res.inset * 5), this.res.h - (this.res.inset * 5));
     const buttonsColumn = this.add.zone((this.res.r - this.res.inset) - (36 / 2), 0, 64, this.res.h - (this.res.inset * 2));
-    const dot = this.add.circle(0, 0, 12, 0x000000, 0.72);
-
-    Phaser.Display.Align.In.Center(dot, buttonsColumn);
 
     this.AlignZones['RenderRegion'] = renderRegion;
     this.AlignZones['ButtonsColumn'] = buttonsColumn;
@@ -66,10 +63,33 @@ export default class FirstContact extends Phaser.Scene {
     this.cursor = this.add.container(0, 0, [cursorCore, cursorPips, cursorRing]);
 
     // Psuedo-page Link Buttons
-    const accountBtn = this.add.circle();
+    const buttonWidth = 42;
+    const buttonHeight = 112;
+    const cornerRadius = 6;
+
+    const accountBtn = this.add.container(0, 0);
+    const accountGFX = this.add.graphics().fillStyle(0x000000, 0.72);
+    accountGFX.fillRoundedRect(0, 0, buttonWidth, buttonHeight, cornerRadius);
+    accountGFX.setPosition(-buttonWidth / 2, -buttonHeight / 2)
+    const accountTxt = this.add.text(0, 0, 'ACCOUNT', {
+      color: '#FFFFFF',
+      fontSize: '18pt',
+      align: 'center',
+      stroke: '#000000',
+      strokeThickness: 3
+    })
+    .setOrigin()
+    .setAngle(90);
+    accountBtn.add([accountGFX, accountTxt]);
+
     const contactBtn = this.add.circle();
     const exploreBtn = this.add.circle();
     const shoppesBtn = this.add.circle();
+
+    // Position ze buttons
+    Phaser.Display.Align.In.Center(accountBtn, this.AlignZones['ButtonsColumn'] as Phaser.GameObjects.Zone);
+    console.debug(this.AlignZones);
+    console.debug(accountBtn);
 
     // Button Physics Bodies
     // Each button is placed into a MatterJS world and are connected by spline constraint chains so that rather than clicking them
