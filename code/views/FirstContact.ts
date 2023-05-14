@@ -63,23 +63,26 @@ export default class FirstContact extends Phaser.Scene {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     this.composer = new EffectComposer(renderer);
-    const camera3D = new THREE.PerspectiveCamera();
+    const camera3D = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.001, 10000);
+    camera3D.position.z = 45;
+
+    // Add the 3D scene objects
+    const knotG = new THREE.TorusKnotGeometry(10, 2, 128, 64);
+    const knotM = new THREE.MeshToonMaterial();
+    const tKnot = new THREE.Mesh(knotG, knotM);
+    scene3D.add(tKnot);
+
+    this.events.on('update', () => tKnot.rotation.z += 0.01);
 
     // Fetch the UI offscreen canvas to rasterize
     const UI2D = new TexturePass(this.UITexture, 0.9);
     const base = new TAARenderPass(scene3D, camera3D, 0xFFAC00, 0.5);
     const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
-    // Bloom & Glow FX
+    const timeHaze = new AfterimagePass(0.72);
     const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
 
-    // Aesthetic FX
-    const retroCRT = new FilmPass(0.1, 1.0, window.screen.height * 2, 0);
-    console.debug(retroCRT.uniforms);
-    const timeHaze = new AfterimagePass(0.3);
-    const normalize = new AdaptiveToneMappingPass(true, 64);
-
-    // Glitch effect to be triggered during scene transitions
+    // Glitch effect to be triggered during view transitions
     const transGlitch = new GlitchPass(-1);
     transGlitch.randX = 0.001;
     transGlitch.curF = 0.00001;
@@ -88,13 +91,9 @@ export default class FirstContact extends Phaser.Scene {
     // Post-Processing "stack" - ordering sensitive
     this.composer.addPass(base);
     this.composer.addPass(UI2D);
-    this.composer.addPass(transGlitch);
     this.composer.addPass(timeHaze);
     this.composer.addPass(hazyGlow);
-    // this.composer.addPass(normalize);
-    this.composer.addPass(retroCRT);
-
-
+    this.composer.addPass(transGlitch);
 
     // TODO: This could probably be its own class
     // Animated cursor
@@ -142,12 +141,8 @@ export default class FirstContact extends Phaser.Scene {
   }
   
   update(): void {
-    this.composer.render();
     this.UITexture.needsUpdate = true;
+    this.composer.render();
     this.cursor.setPosition(this.input.activePointer.worldX, this.input.activePointer.worldY);
-  }
-  
-  preUpdate(): void {
-    console.debug('pp')
   }
 }
