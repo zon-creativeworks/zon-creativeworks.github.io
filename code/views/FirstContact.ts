@@ -1,3 +1,8 @@
+import * as THREE from "three";
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
+import { TexturePass } from "../components/controller/PostProcessing";
+
 export default class FirstContact extends Phaser.Scene {
   constructor() {super('FirstContact')};
 
@@ -51,6 +56,29 @@ export default class FirstContact extends Phaser.Scene {
   preload(): void {}
   
   create(): void {
+    
+    const scene3D = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three') as HTMLCanvasElement, alpha: true, antialias: true });
+    renderer.setSize(this.res.w, this.res.h);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMappingExposure = 1;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    // Fetch the UI offscreen canvas to rasterize
+    const UITexture = new THREE.CanvasTexture(window['Render2D']);
+    console.debug(UITexture);
+
+    const camera3D = new THREE.PerspectiveCamera();
+    const composer = new EffectComposer(renderer);
+
+    composer.addPass(new TAARenderPass(scene3D, camera3D, 0xFFFFFF, 1.0));
+    composer.addPass(new TexturePass(UITexture, 0.9));
+
+    // Sync Three.js rendering with Phaser update frames
+    this.events.on('update', () => {
+      UITexture.needsUpdate = true;
+      composer.render();
+    });
 
     // TODO: This could probably be its own class
     // Animated cursor
@@ -73,15 +101,18 @@ export default class FirstContact extends Phaser.Scene {
     const cornerRadius = 6;
 
     const accountBtn = this.add.container(0, 0);
-    const accountGFX = this.add.graphics().fillStyle(0x000000, 0.72);
+    const accountGFX = this.add.graphics()
+      .fillStyle(0xFFFFFF, 0.72)
+      .lineStyle(6, 0x000000, 1);
     accountGFX.fillRoundedRect(0, 0, buttonWidth, buttonHeight, cornerRadius);
+    accountGFX.strokeRoundedRect(0, 0, buttonWidth, buttonHeight, cornerRadius);
     accountGFX.setPosition(-buttonWidth / 2, -buttonHeight / 2)
-    const accountTxt = this.add.text(0, 0, 'ACCOUNT', {
-      color: '#FFFFFF',
+    const accountTxt = this.add.text(0, 0, 'HIRE ME', {
+      color: '#FFAC00',
       fontSize: '18pt',
       align: 'center',
       stroke: '#000000',
-      strokeThickness: 3
+      strokeThickness: 4
     })
     .setOrigin()
     .setAngle(90);
