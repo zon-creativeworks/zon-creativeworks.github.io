@@ -7,12 +7,9 @@ import MixedMediaView from './components/interface/base/MixedMediaView';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // TODO: Refactor a phaser fork to support offscreen canvases and not forcibly inject its own
-  const offscreenRender = new OffscreenCanvas(window.innerWidth, window.innerHeight);
-
   // Boot up the UI with any initialized MMV scenes
   const UI = new Phaser.Game({
-    type: Phaser.CANVAS,
+    type: Phaser.WEBGL,
     antialias: true,
     antialiasGL: true,
     transparent: true,
@@ -20,21 +17,29 @@ document.addEventListener('DOMContentLoaded', () => {
     disableContextMenu: true,
     width: window.innerWidth,
     height: window.innerHeight,
+    canvas: document.getElementById('phase') as HTMLCanvasElement,
 
-    // @ts-ignore - False flag due to incomplete type definitions
-    context: offscreenRender.getContext('2d'),
+    physics: {
+      default: 'matter',
+      matter: {
+        debug: true,
+        gravity: { x: 0, y: 0 },
+        // @ts-ignore - false error due to incomplete type declarations in Phaser;
+        plugins: {
+          attractors: true
+        }
+      }
+    },
 
     scene: [
       FirstContact,
       MixedMediaView
-    ]
+    ],
+    scale: {
+      mode: Phaser.Scale.RESIZE,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
   });
-
-  // Assign a reference to the UI oscanvas in window
-  window['Render2D'] = <OffscreenCanvas> offscreenRender;
-
-  // Despite being provided with an existing context, phaser still attempts to create its own canvas; remove it
-  document.body.removeChild(UI.canvas);
 
   // --- Tone.js ---
   const now = Tone.now();
@@ -82,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   
   // --- Three.js | UI Layers ---
-  const manager2D = new Manager2D();
+  // const manager2D = new Manager2D();
 });
 
 // TODO: Add DTMF Tone Generator

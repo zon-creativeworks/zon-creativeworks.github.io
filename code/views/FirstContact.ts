@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
-import { TexturePass } from "../components/controller/PostProcessing";
+import { AdaptiveToneMappingPass, AfterimagePass, FXAA, FilmPass, GlitchPass, TexturePass, UnrealBloomPass } from "../components/controller/PostProcessing";
 
 export default class FirstContact extends Phaser.Scene {
   constructor() {super('FirstContact')};
@@ -18,22 +18,18 @@ export default class FirstContact extends Phaser.Scene {
   };
   public cursor: Phaser.GameObjects.Container;
   public AlignZones: { [key: string]: Phaser.GameObjects.Zone } = {};
-
-  /* --- INIT | ]:[ --- */
+  private UITexture: THREE.CanvasTexture;
+  private composer: EffectComposer;
   private camera: Phaser.Cameras.Scene2D.Camera;
+
   init(): void {
 
     // Configure the 2D camera
     this.camera = this.cameras.main;
     this.camera.centerOn(0, 0);
 
-    // TODO: Create a list of multiple colors that the camera cycles through every 10 minutes at random
-    this.camera.setBackgroundColor(0xFFAC00);
-
-    // set the copyright text color to be visible with the given background color
-    const copy = document.getElementById('copyright-notice') as HTMLPreElement;
-    copy.style.color = '#000000';
-    copy.style.opacity = '1';
+    // Create a texture from the parent Phaser instance's canvas
+    this.UITexture = new THREE.CanvasTexture(this.game.canvas);
 
     // Setup positioning columns and regions
     const renderRegion = this.add.zone(0, 0, this.res.w - (this.res.inset * 5), this.res.h - (this.res.inset * 5));
@@ -51,34 +47,54 @@ export default class FirstContact extends Phaser.Scene {
       this.add.rectangle(zone.x, zone.y, zone.width, zone.height, 0x000000, showZones ? 0.24 : 0.00);
     });
   }
-  /* --- INIT | [:] --- */
-  
+
   preload(): void {}
   
   create(): void {
-    
     const scene3D = new THREE.Scene();
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three') as HTMLCanvasElement, alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ 
+      alpha: true,
+      antialias: true,
+      canvas: document.getElementById('three') as HTMLCanvasElement 
+    });
     renderer.setSize(this.res.w, this.res.h);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.toneMappingExposure = 1;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
-    // Fetch the UI offscreen canvas to rasterize
-    const UITexture = new THREE.CanvasTexture(window['Render2D']);
-    console.debug(UITexture);
-
+    this.composer = new EffectComposer(renderer);
     const camera3D = new THREE.PerspectiveCamera();
-    const composer = new EffectComposer(renderer);
 
-    composer.addPass(new TAARenderPass(scene3D, camera3D, 0xFFFFFF, 1.0));
-    composer.addPass(new TexturePass(UITexture, 0.9));
+    // Fetch the UI offscreen canvas to rasterize
+    const UI2D = new TexturePass(this.UITexture, 0.9);
+    const base = new TAARenderPass(scene3D, camera3D, 0xFFAC00, 0.5);
+    const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
-    // Sync Three.js rendering with Phaser update frames
-    this.events.on('update', () => {
-      UITexture.needsUpdate = true;
-      composer.render();
-    });
+    // Bloom & Glow FX
+    const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
+
+    // Aesthetic FX
+    const retroCRT = new FilmPass(0.1, 1.0, window.screen.height * 2, 0);
+    console.debug(retroCRT.uniforms);
+    const timeHaze = new AfterimagePass(0.3);
+    const normalize = new AdaptiveToneMappingPass(true, 64);
+
+    // Glitch effect to be triggered during scene transitions
+    const transGlitch = new GlitchPass(-1);
+    transGlitch.randX = 0.001;
+    transGlitch.curF = 0.00001;
+    transGlitch.enabled = false;
+    
+    // Post-Processing "stack" - ordering sensitive
+    this.composer.addPass(base);
+    this.composer.addPass(UI2D);
+    this.composer.addPass(transGlitch);
+    this.composer.addPass(timeHaze);
+    this.composer.addPass(hazyGlow);
+    // this.composer.addPass(normalize);
+    this.composer.addPass(retroCRT);
+
+
 
     // TODO: This could probably be its own class
     // Animated cursor
@@ -93,7 +109,6 @@ export default class FirstContact extends Phaser.Scene {
     this.events.on('update', () => cursorPips.angle++);
     cursorRing.setScale(0.6, 0.6);
     this.cursor = this.add.container(0, 0, [cursorCore, cursorPips, cursorRing]);
-
 
     // Psuedo-page Link Buttons
     const buttonWidth = 42;
@@ -118,14 +133,8 @@ export default class FirstContact extends Phaser.Scene {
     .setAngle(90);
     accountBtn.add([accountGFX, accountTxt]);
 
-    const contactBtn = this.add.circle();
-    const exploreBtn = this.add.circle();
-    const shoppesBtn = this.add.circle();
-
     // Position ze buttons
     Phaser.Display.Align.In.Center(accountBtn, this.AlignZones['ButtonsColumn'] as Phaser.GameObjects.Zone);
-    console.debug(this.AlignZones);
-    console.debug(accountBtn);
 
     // Button Physics Bodies
     // Each button is placed into a MatterJS world and are connected by spline constraint chains so that rather than clicking them
@@ -133,8 +142,12 @@ export default class FirstContact extends Phaser.Scene {
   }
   
   update(): void {
+    this.composer.render();
+    this.UITexture.needsUpdate = true;
     this.cursor.setPosition(this.input.activePointer.worldX, this.input.activePointer.worldY);
   }
   
-  postUpdate(): void {}
+  preUpdate(): void {
+    console.debug('pp')
+  }
 }

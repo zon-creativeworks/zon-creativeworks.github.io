@@ -35,7 +35,7 @@ main {
 
 #copyright-notice {
   color: white;
-  opacity: 0.12;
+  opacity: 0.72;
   font-size: 0.9svh;
   text-align: center;
 
@@ -53,13 +53,13 @@ main {
   background-color: transparent;
   pointer-events: all;
   border-radius: 32px;
+  opacity: 0.72 !important;
 }
 
 #three {
   z-index: 1;
-  background-color: transparent;
-  pointer-events: none;
   border-radius: 32px;
+  pointer-events: none;
 }
 
 #bezel {
