@@ -65,40 +65,30 @@ export default class FirstContact extends Phaser.Scene {
 
     this.load.svg('Logo_CreativeWorks', 'code/assets/svg/CreativeWorks.svg', { scale: 8 });
 
-    this.load.svg('For_Hire_Button', 'code/assets/svg/ForHireButton.svg', { scale: 4 });
-
     // Using OBJ is more streamlined than GLTF as it does not create a whole scene
     const modelLoader = new OBJLoader();
     modelLoader.path = 'code/assets/models/';
-    modelLoader.load('Apps Label.obj', (obj: THREE.Group) => {
-      console.debug(obj);
-
-      // @ts-ignore | false flag by incomplete type defs
-      const pillFrame: THREE.Mesh = obj.children.filter((mesh: THREE.Mesh) => {return mesh.name === 'Pill_Frame' })[0];
+    modelLoader.load('Apps Label.obj', (obj: THREE.Group) => { // add the pill frame once the artifacts caused on it by the outline pass have been resolved
 
       // @ts-ignore | false flag by incomplete type defs
       const appsLabel: THREE.Mesh = obj.children.filter((mesh: THREE.Mesh) => {return mesh.name === 'Apps_Label' })[0];
 
-        const mat_PillFrame = new THREE.MeshBasicMaterial({
-          blending: THREE.AdditiveBlending,
+        const mat_AppsLabel = new THREE.MeshBasicMaterial({
+          blending: THREE.NormalBlending,
           color: 0xFFFFFF,
           dithering: true,
           vertexColors: true,
-          side: THREE.BackSide,
+          side: THREE.FrontSide
         });
-        const mat_AppsLabel = new THREE.MeshToonMaterial({});
+        appsLabel.material = mat_AppsLabel;
 
-        pillFrame.material = mat_PillFrame;
-        pillFrame.scale.set(1, 1, 2);
-
-      // Add prefabs to the scene
-      obj.scale.set(10, 10, 10);
-      obj.position.set(0, 13, 1);
-      obj.rotation.set(0, Phaser.Math.DegToRad(180), 0);
-      this.scene3D.add(obj);
+        appsLabel.scale.set(10, 10, 10);
+        appsLabel.position.set(0, 13, 1);
+      
+      this.scene3D.add(appsLabel);
 
       this.events.on('update', () => {
-        obj.rotation.y += 0.01;
+        appsLabel.rotation.y += 0.01;
       });
     });
   }
@@ -184,7 +174,7 @@ export default class FirstContact extends Phaser.Scene {
 
     const outlines = new OutlineEffect(olRender, {
       defaultColor: [0x00,0x00, 0x00],
-      defaultThickness: 0.006,
+      defaultThickness: 0.003,
     });
     
     this.events.on('update', () => {
@@ -194,6 +184,8 @@ export default class FirstContact extends Phaser.Scene {
 
     // Rasterize FX outputs
     const outlineFX = new TexturePass(tOutline, 0.9);
+
+    // this.noLines.add(this.scene3D);
 
     // Glitch effect to be triggered during view transitions
     const transGlitch = new GlitchPass(-1);

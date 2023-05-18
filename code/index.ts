@@ -9,9 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Boot up the UI with any initialized MMV scenes
   const UI = new Phaser.Game({
-    type: Phaser.WEBGL,
+    type: Phaser.CANVAS,
     antialias: true,
-    antialiasGL: true,
     transparent: true,
     customEnvironment: true,
     disableContextMenu: true,
