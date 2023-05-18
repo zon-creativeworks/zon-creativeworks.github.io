@@ -3,13 +3,22 @@ import * as THREE from "three";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
 import { 
-    AdaptiveToneMappingPass, 
-    AfterimagePass, 
+    FXAA, 
+    FilmPass, 
+    GlitchPass, 
+    OutlinePass, 
+    TexturePass, 
+    OutlineEffect, 
+    DotScreenPass, 
     AnaglyphEffect, 
-    DotScreenPass, FXAA, FilmPass, GlitchPass, OutlineEffect, OutlinePass, RenderPixelatedPass, TexturePass, UnrealBloomPass } from "../components/controller/PostProcessing";
-import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes';
+    AfterimagePass, 
+    UnrealBloomPass, 
+    RenderPixelatedPass, 
+    AdaptiveToneMappingPass, 
+  } from "../components/controller/PostProcessing";
 import { lerp } from "three/src/math/MathUtils";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes';
 
 export default class FirstContact extends Phaser.Scene {
   constructor() {super('FirstContact')};
