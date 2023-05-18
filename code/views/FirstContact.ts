@@ -74,31 +74,57 @@ export default class FirstContact extends Phaser.Scene {
 
     this.load.svg('Logo_CreativeWorks', 'code/assets/svg/CreativeWorks.svg', { scale: 8 });
 
-    // Using OBJ is more streamlined than GLTF as it does not create a whole scene
+    // Load the OBJ models and configure their mats
     const modelLoader = new OBJLoader();
     modelLoader.path = 'code/assets/models/';
+
+    const labels: THREE.Mesh[] = [];
     modelLoader.load('Apps Label.obj', (obj: THREE.Group) => { // add the pill frame once the artifacts caused on it by the outline pass have been resolved
 
-      // @ts-ignore | false flag by incomplete type defs
-      const appsLabel: THREE.Mesh = obj.children.filter((mesh: THREE.Mesh) => {return mesh.name === 'Apps_Label' })[0];
+      // @ts-ignore | valid assignment
+      const appsLabel: THREE.Mesh = obj.children[0];
+      const mat_AppsLabel = new THREE.MeshBasicMaterial({
+        blending: THREE.NormalBlending,
+        color: 0xFFFFFF,
+        dithering: true,
+        vertexColors: true,
+        side: THREE.FrontSide
+      });
+      appsLabel.material = mat_AppsLabel;
 
-        const mat_AppsLabel = new THREE.MeshBasicMaterial({
-          blending: THREE.NormalBlending,
-          color: 0xFFFFFF,
-          dithering: true,
-          vertexColors: true,
-          side: THREE.FrontSide
-        });
-        appsLabel.material = mat_AppsLabel;
-
-        appsLabel.scale.set(10, 10, 10);
-        appsLabel.position.set(0, 13, 1);
+      appsLabel.scale.set(10, 10, 10);
+      appsLabel.position.set(0, 13, 1);
       
-      this.scene3D.add(appsLabel);
-
       this.events.on('update', () => {
         appsLabel.rotation.y += 0.01;
       });
+
+      this.scene3D.add(appsLabel);
+      this.cache.obj.add('apps_label', appsLabel);
+    });
+
+    modelLoader.load('Games Label.obj', (obj: THREE.Group) => {
+
+      // @ts-ignore | valid assignment
+      const gamesLabel: THREE.Mesh = obj.children[0];
+      const mat_gamesLabel = new THREE.MeshBasicMaterial({
+        blending: THREE.NormalBlending,
+        color: 0xFFFFFF,
+        dithering: true,
+        vertexColors: true,
+        side: THREE.FrontSide
+      });
+      gamesLabel.material = mat_gamesLabel;
+
+      gamesLabel.scale.set(11, 11, 11);
+      gamesLabel.position.set(0, -13, 1);
+
+      this.events.on('update', () => {
+        gamesLabel.rotation.y -= 0.01;
+      });
+
+      this.scene3D.add(gamesLabel);
+      this.cache.obj.add('games_label', gamesLabel);
     });
   }
   
