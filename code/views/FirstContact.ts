@@ -79,7 +79,8 @@ export default class FirstContact extends Phaser.Scene {
     modelLoader.path = 'code/assets/models/';
 
     const labels: THREE.Mesh[] = [];
-    modelLoader.load('Apps Label.obj', (obj: THREE.Group) => { // add the pill frame once the artifacts caused on it by the outline pass have been resolved
+
+    modelLoader.load('Apps Label.obj', (obj: THREE.Group) => {
 
       // @ts-ignore | valid assignment
       const appsLabel: THREE.Mesh = obj.children[0];
@@ -94,12 +95,10 @@ export default class FirstContact extends Phaser.Scene {
 
       appsLabel.scale.set(10, 10, 10);
       appsLabel.position.set(0, 13, 1);
-      
-      this.events.on('update', () => {
-        appsLabel.rotation.y += 0.01;
-      });
 
       this.scene3D.add(appsLabel);
+
+      // add to phaser cache for creating tween animations
       this.cache.obj.add('apps_label', appsLabel);
     });
 
@@ -119,11 +118,9 @@ export default class FirstContact extends Phaser.Scene {
       gamesLabel.scale.set(11, 11, 11);
       gamesLabel.position.set(0, -13, 1);
 
-      this.events.on('update', () => {
-        gamesLabel.rotation.y -= 0.01;
-      });
-
       this.scene3D.add(gamesLabel);
+
+      // add to phaser cache for creating tween animations
       this.cache.obj.add('games_label', gamesLabel);
     });
   }
@@ -134,10 +131,10 @@ export default class FirstContact extends Phaser.Scene {
     this.add.circle(0, 0, 12, 0x000000, 1)
     .setStrokeStyle(3, 0xFFFFFF, 1);
 
+    // Load in the main graphics
     this.add.image(0, 0, 'ZoN_Ring');
     this.add.image(0, (this.res.h / 2) -420, 'Copyright_Stamp').setAlpha(0.24);
-    this.add.image(0, 42, 'Logo_CreativeWorks');
-    // this.add.image(-24, -200, 'For_Hire_Button');
+    this.add.image(0, 82, 'Logo_CreativeWorks');
 
     const follower = this.add.circle(0, 0, 24).setStrokeStyle(6, 0xFF0000, 1);
     this.events.on('update', (t: number, d: number) => {
@@ -184,7 +181,24 @@ export default class FirstContact extends Phaser.Scene {
 
     // Setup scene lighting
     const light = new THREE.PointLight(0x66ACFF, 0.26);
-    this.scene3D.add(tKnot, light);
+    this.scene3D.add(
+      tKnot, 
+      light
+    );
+
+    // Mouseover tweens for the apps label
+    // TODO: Add a raycast to trigger the tween with
+    const appsLabel = this.cache.obj.get('apps_label') as THREE.Mesh;
+    this.tweens.add({
+      yoyo: true,
+      repeat: -1,
+      repeatDelay: 250,
+      duration: 600,
+      hold: 250,
+      ease: 'easeInOut',
+      targets: appsLabel.rotation,
+      x: Phaser.Math.DegToRad(45),
+    });
 
     this.events.on('update', () => {
       tKnot.rotation.z += 0.01; 
