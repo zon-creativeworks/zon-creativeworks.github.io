@@ -1,7 +1,15 @@
+import Phaser from "phaser";
 import * as THREE from "three";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { TAARenderPass } from 'three/examples/jsm/postprocessing/TAARenderPass';
-import { AdaptiveToneMappingPass, AfterimagePass, FXAA, FilmPass, GlitchPass, TexturePass, UnrealBloomPass } from "../components/controller/PostProcessing";
+import { 
+    AdaptiveToneMappingPass, 
+    AfterimagePass, 
+    AnaglyphEffect, 
+    DotScreenPass, FXAA, FilmPass, GlitchPass, OutlineEffect, OutlinePass, RenderPixelatedPass, TexturePass, UnrealBloomPass } from "../components/controller/PostProcessing";
+import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes';
+import { lerp } from "three/src/math/MathUtils";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 
 export default class FirstContact extends Phaser.Scene {
   constructor() {super('FirstContact')};
@@ -21,6 +29,7 @@ export default class FirstContact extends Phaser.Scene {
   private UITexture: THREE.CanvasTexture;
   private composer: EffectComposer;
   private camera: Phaser.Cameras.Scene2D.Camera;
+  private scene3D: THREE.Scene = new THREE.Scene();
 
   init(): void {
 
@@ -35,7 +44,7 @@ export default class FirstContact extends Phaser.Scene {
     const renderRegion = this.add.zone(0, 0, this.res.w - (this.res.inset * 5), this.res.h - (this.res.inset * 5));
 
     // Needs two separate columns; top and bottom - 2 buttons each
-    const buttonsColumn = this.add.zone((this.res.r - this.res.inset) - (36 / 2), 0, 64, this.res.h - (this.res.inset * 2));
+    const buttonsColumn = this.add.zone((this.res.r - this.res.inset) + 12, 0, 64, this.res.h - (this.res.inset * 2));
 
     this.AlignZones['RenderRegion'] = renderRegion;
     this.AlignZones['ButtonsColumn'] = buttonsColumn;
@@ -48,10 +57,72 @@ export default class FirstContact extends Phaser.Scene {
     });
   }
 
-  preload(): void {}
+  preload(): void {
+
+    this.load.svg('ZoN_Ring', 'code/assets/svg/ZoN_Ring.svg', { scale: 11});
+
+    this.load.svg('Copyright_Stamp', 'code/assets/svg/CopyrightStamp.svg', { scale: 8 });
+
+    this.load.svg('Logo_CreativeWorks', 'code/assets/svg/CreativeWorks.svg', { scale: 8 });
+
+    this.load.svg('For_Hire_Button', 'code/assets/svg/ForHireButton.svg', { scale: 4 });
+
+    // Using OBJ is more streamlined than GLTF as it does not create a whole scene
+    const modelLoader = new OBJLoader();
+    modelLoader.path = 'code/assets/models/';
+    modelLoader.load('Apps Label.obj', (obj: THREE.Group) => {
+      console.debug(obj);
+
+      // @ts-ignore | false flag by incomplete type defs
+      const pillFrame: THREE.Mesh = obj.children.filter((mesh: THREE.Mesh) => {return mesh.name === 'Pill_Frame' })[0];
+
+      // @ts-ignore | false flag by incomplete type defs
+      const appsLabel: THREE.Mesh = obj.children.filter((mesh: THREE.Mesh) => {return mesh.name === 'Apps_Label' })[0];
+
+        const mat_PillFrame = new THREE.MeshBasicMaterial({
+          blending: THREE.AdditiveBlending,
+          color: 0xFFFFFF,
+          dithering: true,
+          vertexColors: true,
+          side: THREE.BackSide,
+        });
+        const mat_AppsLabel = new THREE.MeshToonMaterial({});
+
+        pillFrame.material = mat_PillFrame;
+        pillFrame.scale.set(1, 1, 2);
+
+      // Add prefabs to the scene
+      obj.scale.set(10, 10, 10);
+      obj.position.set(0, 13, 1);
+      obj.rotation.set(0, Phaser.Math.DegToRad(180), 0);
+      this.scene3D.add(obj);
+
+      this.events.on('update', () => {
+        obj.rotation.y += 0.01;
+      });
+    });
+  }
   
   create(): void {
-    const scene3D = new THREE.Scene();
+
+    // The UI Bits & Bobs
+    this.add.circle(0, 0, 12, 0x000000, 1)
+    .setStrokeStyle(3, 0xFFFFFF, 1);
+
+    this.add.image(0, 0, 'ZoN_Ring');
+    this.add.image(0, (this.res.h / 2) -420, 'Copyright_Stamp').setAlpha(0.24);
+    this.add.image(0, 42, 'Logo_CreativeWorks');
+    // this.add.image(-24, -200, 'For_Hire_Button');
+
+    const follower = this.add.circle(0, 0, 24).setStrokeStyle(6, 0xFF0000, 1);
+    this.events.on('update', (t: number, d: number) => {
+      if (this.input.activePointer.isDown) {
+        follower.setPosition(this.cursor.x, this.cursor.y)
+      } else {
+        follower.setPosition(0, 0);
+      }
+    });
+
     const renderer = new THREE.WebGLRenderer({ 
       alpha: true,
       antialias: true,
@@ -61,26 +132,68 @@ export default class FirstContact extends Phaser.Scene {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.toneMappingExposure = 1;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-
+    
     this.composer = new EffectComposer(renderer);
     const camera3D = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.001, 10000);
-    camera3D.position.z = 45;
+    camera3D.position.z = 64;
 
     // Add the 3D scene objects
-    const knotG = new THREE.TorusKnotGeometry(10, 2, 128, 64);
-    const knotM = new THREE.MeshToonMaterial();
-    const tKnot = new THREE.Mesh(knotG, knotM);
-    scene3D.add(tKnot);
+    const knotG = new THREE.TorusKnotGeometry(6 * (window.innerWidth / window.innerHeight), 2 * (window.innerWidth / window.innerHeight), 128, 64);
+    const TwoToneWhite = new THREE.MeshToonMaterial({
+      color: 0xFFFFFF, 
+      emissive: 0xFFFFFF, 
+      emissiveIntensity: 0.03,
+      dithering: true,
+      fog: true,
+      forceSinglePass: true,
+      name: 'dummy_knot',
+      opacity: 1,
+      polygonOffset: true,
+      polygonOffsetFactor: 2,
+      precision: 'highp',
+      toneMapped: true,
+      vertexColors: false,
+    });
+    
+    const tKnot = new THREE.Mesh(knotG, TwoToneWhite);
 
-    this.events.on('update', () => tKnot.rotation.z += 0.01);
+    // Setup scene lighting
+    const light = new THREE.PointLight(0x66ACFF, 0.26);
+    this.scene3D.add(tKnot, light);
+
+    this.events.on('update', () => {
+      tKnot.rotation.z += 0.01; 
+      tKnot.rotation.y += 0.01;
+      light.position.x = this.cursor.x;
+      light.position.y = -this.cursor.y;
+    });
+    light.position.z = 20;
 
     // Fetch the UI offscreen canvas to rasterize
     const UI2D = new TexturePass(this.UITexture, 0.9);
-    const base = new TAARenderPass(scene3D, camera3D, 0xFFAC00, 0.5);
+    const base = new TAARenderPass(this.scene3D, camera3D, 0xFFAC00, 0.5);
     const vec2res = new THREE.Vector2(this.res.h, this.res.w); /* for passes that require a vec2 resolution */
 
-    const timeHaze = new AfterimagePass(0.72);
-    const hazyGlow = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
+    const motionBlur = new AfterimagePass(0.24);
+    const diffuseBloom = new UnrealBloomPass(vec2res, 0.63, 0.003, 0.001);
+
+    // outlines
+    const olTarget = new OffscreenCanvas(this.res.w, this.res.h);
+    const olRender = new THREE.WebGLRenderer({ canvas: olTarget, alpha: true, antialias: true, premultipliedAlpha: true });
+    const tOutline = new THREE.CanvasTexture(olTarget);
+
+    const outlines = new OutlineEffect(olRender, {
+      defaultColor: [0x00,0x00, 0x00],
+      defaultThickness: 0.006,
+    });
+    
+    this.events.on('update', () => {
+      tOutline.needsUpdate = true;
+      outlines.render(this.scene3D, camera3D);
+    });
+
+    // Rasterize FX outputs
+    const outlineFX = new TexturePass(tOutline, 0.9);
 
     // Glitch effect to be triggered during view transitions
     const transGlitch = new GlitchPass(-1);
@@ -90,12 +203,19 @@ export default class FirstContact extends Phaser.Scene {
     
     // Post-Processing "stack" - ordering sensitive
     this.composer.addPass(base);
+
+    // Contour outlines
+    this.composer.addPass(outlineFX);
+
+    // UI render pass
     this.composer.addPass(UI2D);
-    this.composer.addPass(timeHaze);
-    this.composer.addPass(hazyGlow);
+    
+    // Final Post-Process Passes
+    this.composer.addPass(motionBlur);
+    this.composer.addPass(diffuseBloom);
     this.composer.addPass(transGlitch);
 
-    // TODO: This could probably be its own class
+    // TODO: This could/should probably be its own class with a dedicated overlay
     // Animated cursor
     const cursorCore = this.add.circle(0, 0, 6, 0x000000, 0.64);
     const crLeftArc = this.add.arc(-3, 0, 12, -90, +90, true).setStrokeStyle(3, 0x000000, 0.72).setClosePath(false);
@@ -109,31 +229,6 @@ export default class FirstContact extends Phaser.Scene {
     cursorRing.setScale(0.6, 0.6);
     this.cursor = this.add.container(0, 0, [cursorCore, cursorPips, cursorRing]);
 
-    // Psuedo-page Link Buttons
-    const buttonWidth = 42;
-    const buttonHeight = 112;
-    const cornerRadius = 6;
-
-    const accountBtn = this.add.container(0, 0);
-    const accountGFX = this.add.graphics()
-      .fillStyle(0xFFFFFF, 0.72)
-      .lineStyle(6, 0x000000, 1);
-    accountGFX.fillRoundedRect(0, 0, buttonWidth, buttonHeight, cornerRadius);
-    accountGFX.strokeRoundedRect(0, 0, buttonWidth, buttonHeight, cornerRadius);
-    accountGFX.setPosition(-buttonWidth / 2, -buttonHeight / 2)
-    const accountTxt = this.add.text(0, 0, 'HIRE ME', {
-      color: '#FFAC00',
-      fontSize: '18pt',
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 4
-    })
-    .setOrigin()
-    .setAngle(90);
-    accountBtn.add([accountGFX, accountTxt]);
-
-    // Position ze buttons
-    Phaser.Display.Align.In.Center(accountBtn, this.AlignZones['ButtonsColumn'] as Phaser.GameObjects.Zone);
 
     // Button Physics Bodies
     // Each button is placed into a MatterJS world and are connected by spline constraint chains so that rather than clicking them
